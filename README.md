@@ -3,7 +3,7 @@
 in some months, but let's see.
 
 # 16larks
-[AWESOME LOGO](logo/16larks.png)
+![AWESOME LOGO](logo/16larks.png)
 A 16-bit emulator (SNES)
 
 ## What we've got so far? 
