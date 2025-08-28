@@ -160,7 +160,7 @@ typedef enum {
 	
 	// JMP INS
 	_jmp_addr	= 0x4C,
-	_jmp_addr_l	= 0x5C,
+	_jmp_l		= 0x5C,
 	_jmp_addr_indr	= 0x6C,
 	_jmp_addr_x_indr= 0x7C,
 	_jmp_addr_indr_l= 0xDC,

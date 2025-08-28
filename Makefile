@@ -7,7 +7,7 @@ libraries	:= -limgui
 ifeq ($(ps2), 1)
 	source		+= source/ps2
 	prefix		:= mips64r5900el-ps2-elf-
-	flags		+= -D_EE	
+	flags		+= -D_EE 
 	libraries	:= -L$(PS2SDK)/ee/lib -L$(PS2SDK)/ports/lib -ldebug -lkernel \
 			   -lps2_drivers
 	includes	+= -I$(PS2SDK)/ee/include -I$(PS2SDK)/common/include \
@@ -26,7 +26,7 @@ source		:= source
 c_source 	:= $(foreach c_src, $(source), $(wildcard $(c_src)/*.c))
 cpp_source	:= $(foreach cpp_src, $(source), $(wildcard $(cpp_src)/*.cpp))
 c_objects	:= $(patsubst %.c,build/%.o,$(c_source))
-c_objects	+= $(patsubst %.cpp,build/%.o,$(cpp_source))
+#c_objects	+= $(patsubst %.cpp,build/%.o,$(cpp_source))
 
 objects		:= $(c_objects)
 

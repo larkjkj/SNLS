@@ -4,6 +4,7 @@
 
 typedef struct {
 	u32		sn_PC;
+	u32		sn_subPC;	/* Subroutine */
 
 	u16		sn_S;
 	u16		sn_Acc;
@@ -12,6 +13,8 @@ typedef struct {
 	u16		sn_DP;
 	u16		sn_PB;
 	u16		sn_P;
+
+	u8		sn_Flags;
 
 	bool 		sn_NFlag;
 	bool 		sn_VFlag;

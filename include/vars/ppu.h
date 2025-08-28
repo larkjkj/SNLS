@@ -3,7 +3,7 @@
 #include "types.h"
 
 typedef struct sn_PPU {
-
+	u16*	IniDisp;
 } sn_PPU;
 
 typedef struct sn_SPPU {
