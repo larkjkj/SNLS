@@ -1,7 +1,8 @@
-#ifndef	__TYPES__
-#define __TYPES__
+#ifndef	__TYPESH__
+#define __TYPESH__
 
 #include <stdint.h>
+
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint64_t u64;

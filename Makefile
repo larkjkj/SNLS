@@ -1,17 +1,17 @@
-binary		:= 16larks.ELF
+binary		:= SNLS.ELF
 ps2		?= 0
-flags		:=
+flags		:= 
 includes	:= -Iinclude -I.
 libraries	:= -limgui
 
 ifeq ($(ps2), 1)
 	source		+= source/ps2
 	prefix		:= mips64r5900el-ps2-elf-
-	flags		+= -D_EE 
+	flags		+= -D_EE
 	libraries	:= -L$(PS2SDK)/ee/lib -L$(PS2SDK)/ports/lib -ldebug -lkernel \
 			   -lps2_drivers
 	includes	+= -I$(PS2SDK)/ee/include -I$(PS2SDK)/common/include \
-			   -I$(PS2SDK)/ports/include 
+			   -I$(PS2SDK)/ports/include
 	linkfile	:= -T$(PS2SDK)/ee/startup/linkfile
 else
 	prefix		:=
@@ -44,5 +44,3 @@ build/%.o: %.cpp
 
 clean:
 	rm -rf $(binary) $(objects)
-
-

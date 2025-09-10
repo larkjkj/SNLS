@@ -1,0 +1,8 @@
+node: Peripheral
+  name: Super Famicom
+  attribute
+    name: location
+    value: /home/lark/Repos/new/16larks/roms/
+  attribute
+    name: name
+    value: roms

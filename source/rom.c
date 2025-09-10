@@ -9,7 +9,7 @@
 
 #include "vars/rom.h"
 #include "vars/cpu.h"
-#include "vars/bus.h"
+#include "vars/memory.h"
 
 #ifdef _EE
 #include <debug.h>
@@ -17,16 +17,12 @@
 
 FILE* rom_File = NULL;
 
-/* Warning, some things here will be moved
- * to another file, called bus.c, this file
- * is intended for ROM usage only */
-
-u32 address_romTypes[3] = {
+static u32 address_romTypes[3] = {
 	0x7FD5,
 	0xFFD5,
 };
 
-u8 valid_romTypes[7] = {
+static u8 valid_romTypes[7] = {
 	0x20, 0x21, 0x23, 0x30, 0x31, 0x32, 0x35
 };
 
@@ -36,7 +32,7 @@ extern u16 convertBEtoLE16(u16 address) {
 	return (y << 8 | x);
 }
 
-extern u8 returnBank(u32 byteSize) {
+extern u8 returnBank(size_t byteSize) {
 	u8 x = ((byteSize)) / 32768;
 	return x;
 }
@@ -54,7 +50,7 @@ extern u8 returnBank(u32 byteSize) {
 
 		//u8 recNumb = (decNumb %= 16);
 
-		printf("%i => %c\n", decNumb, recNumb);	
+		printf("%i => %c\n", decNumb, recNumb);
 	}
 */
 //	return printf("%X", decNumb);
@@ -63,15 +59,16 @@ extern u8 returnBank(u32 byteSize) {
 /* Remember to replace variable calls with struct members */
 int splitROM(rom* rom_Ptr) {
 	fseek(rom_File, rom_Ptr->offset, SEEK_SET);
-	if (rom_Ptr->type & 0x20) {
-		rom_Ptr->banks = 0x8000; 
+	if (rom_Ptr->type & 0x01) {
+		rom_Ptr->banksize = 0x8000;
+	} else if (rom_Ptr->type & 0x00) {
+		rom_Ptr->banksize = 0x10000;
 	}
 
 	switch (rom_Ptr->type) {
 		case 0x20:
 			rom_Ptr->header = 0x7FFC + rom_Ptr->offset;
-			fread(&memory_vMap[0x8000], sizeof(u8), rom_Ptr->size, rom_File);
-			rom_Ptr->banks = 0x8000; 
+			rom_Ptr->banksize = 0x8000;
 			printf("LoROM \n");
 		break;
 		case 0x21:
@@ -97,10 +94,10 @@ int splitROM(rom* rom_Ptr) {
 	}
 	fseek(rom_File, rom_Ptr->header, SEEK_SET);
 	fread(&rom_Ptr->resetV, sizeof(u16), 1, rom_File);
+	splitBanks(rom_Ptr);
 //	fseek(rom_File, 0, SEEK_SET);
 	/* remanescent code */
 	//rom_Ptr->MapArea = 0x8000;
-	printf("Split sucess \n");
 	return 1;
 }
 
@@ -113,7 +110,7 @@ int findROMMap(rom* rom_Ptr) {
 			if (memcmp(&rom_Ptr->type, &valid_romTypes[j], sizeof(u8)) == 0) {
 				printf("Found: %02X\n", rom_Ptr->type);
 				return 1;
-			} 
+			}
 		}
 		continue;
 	};
@@ -138,6 +135,7 @@ void openRom(char* rom_name, rom* rom_Ptr) {
 		}*/
 		rom_Ptr->offset = (ftell(rom_File) % 1024);
 		rom_Ptr->size = ftell(rom_File) - rom_Ptr->offset;
+		rom_Ptr->banks = returnBank(rom_Ptr->size);
 
 		printf("ROM size: %zu Offset: %zu \n", rom_Ptr->size, rom_Ptr->offset);
 
@@ -145,20 +143,16 @@ void openRom(char* rom_name, rom* rom_Ptr) {
 			/* Wrong address btw */
 			//address_romTypes[3] = 0x40FFC0;
 		}
-		if (ferror(rom_File)) {
-			printf("Error\n");
-		}
 
 		printf("Checking rom type..\n");
 		if (findROMMap(rom_Ptr)) {
 			//memory_vMap = malloc(0x7FFF + BytePerBank(rom_Ptr->size));
-			memory_vMap = malloc(0x7FFF + rom_Ptr->size);
+			//memory_vMap = malloc(0x7FFF + rom_Ptr->size);
 			splitROM(rom_Ptr);
 		}
-		if (fseek(rom_File, rom_Ptr->offset, SEEK_SET) == 0) {
-			printf("ROM setup sucess \n");
-		}
 	};
-	fclose(rom_File);
-}
 
+	fclose(rom_File);
+
+	return;
+};

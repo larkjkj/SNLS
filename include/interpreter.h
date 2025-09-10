@@ -1,4 +1,4 @@
-extern void snADC_dp(sn_CPU* cpuIndex);
+/*extern void snADC_dp(sn_CPU* cpuIndex);
 extern void snADC_const(sn_CPU* cpuIndex);
 extern void snADC_addr(sn_CPU* cpuIndex);
 extern void snADC_long(sn_CPU* cpuIndex, rom* rom_Ptr){};
@@ -24,6 +24,7 @@ extern void snBEQ(sn_CPU* cpuIndex);
 extern void snBIT_addr(sn_CPU* cpuIndex);
 
 extern void snBRA(sn_CPU* cpuIndex);
+extern void snBPL(sn_CPU* cpuIndex);
 
 extern void snCLC(sn_CPU* cpuIndex);
 extern void snCLD(sn_CPU* cpuIndex);
@@ -70,6 +71,8 @@ extern void snLDX_addr(sn_CPU* cpuIndex);
 extern void snLDX_dpY(sn_CPU* cpuIndex);
 extern void snLDX_addrY(sn_CPU* cpuIndex);
 
+extern void snLDY_const(sn_CPU* cpuIndex);
+
 extern void snINC_Acc(sn_CPU* cpuIndex);
 extern void snINC_dp(sn_CPU* cpuIndex);
 extern void snINC_addr(sn_CPU* cpuIndex);
@@ -80,7 +83,7 @@ extern void snINX(sn_CPU* cpuIndex);
 extern void snINY(sn_CPU* cpuIndex);
 
 extern void snJMP_addr(sn_CPU* cpuIndex);
-extern void snJMP_long(sn_CPU* cpuIndex, rom* rom_Ptr){};
+extern void snJMP_long(sn_CPU* cpuIndex);
 
 extern void snJSR_addr(sn_CPU* cpuIndex);
 extern void snJSR_long(sn_CPU* cpuIndex, rom* rom_Ptr);
@@ -102,7 +105,10 @@ extern void snSEP(sn_CPU* cpuIndex);
 
 extern void snSTA_dp(sn_CPU* cpuIndex);
 extern void snSTA_addr(sn_CPU* cpuIndex);
-extern void snSTA_long(sn_CPU* cpuIndex, rom* rom_Ptr){};
+extern void snSTA_addrY(sn_CPU* cpuIndex);
+extern void snSTA_addrX(sn_CPU* cpuIndex);
+extern void snSTA_long(sn_CPU* cpuIndex);
+extern void snSTA_longX(sn_CPU* cpuIndex);
 
 extern void snSTY_addr(sn_CPU* cpuIndex);
 extern void snSTY_dp(sn_CPU* cpuIndex);
@@ -117,6 +123,9 @@ extern void snTAX(sn_CPU* cpuIndex);
 extern void snTAY(sn_CPU* cpuIndex);
 extern void snTCD(sn_CPU* cpuIndex);
 extern void snTDC(sn_CPU* cpuIndex);
+
+extern void snTSB_addr(sn_CPU* cpuIndex);
+
 extern void snTXA(sn_CPU* cpuIndex);
 extern void snTXY(sn_CPU* cpuIndex);
 extern void snTYA(sn_CPU* cpuIndex);
@@ -124,3 +133,57 @@ extern void snTYX(sn_CPU* cpuIndex);
 
 extern void snWAI(sn_CPU* cpuIndex);
 extern void snXCE(sn_CPU* cpuIndex);
+*/
+
+
+extern void sn_OpBMI(sn_CPU* cpuIndex);
+extern void sn_OpBPL(sn_CPU* cpuIndex);
+extern void sn_OpBRA(sn_CPU* cpuIndex);
+
+extern void sn_OpCLC(sn_CPU* cpuIndex);
+extern void sn_OpCLD(sn_CPU* cpuIndex);
+extern void sn_OpCLI(sn_CPU* cpuIndex);
+extern void sn_OpCLV(sn_CPU* cpuIndex);
+
+extern void sn_OpJMP_addr(sn_CPU* cpuIndex);
+
+extern void sn_OpLDA_const(sn_CPU* cpuIndex);
+extern void sn_OpLDX_const(sn_CPU* cpuIndex);
+
+extern void sn_OpDEA(sn_CPU* cpuIndex);
+extern void sn_OpDEX(sn_CPU* cpuIndex);
+extern void sn_OpDEY(sn_CPU* cpuIndex);
+
+
+extern void sn_OpINA(sn_CPU* cpuIndex);
+extern void sn_OpINC_dp(sn_CPU* cpuIndex);
+extern void sn_OpINC_addr(sn_CPU* cpuIndex);
+extern void sn_OpINC_dpX(sn_CPU* cpuIndex);
+extern void sn_OpINC_addrX(sn_CPU* cpuIndex);
+extern void sn_OpINX(sn_CPU* cpuIndex);
+extern void sn_OpINY(sn_CPU* cpuIndex);
+
+extern void sn_OpSEC(sn_CPU* cpuIndex);
+extern void sn_OpSED(sn_CPU* cpuIndex);
+extern void sn_OpSEI(sn_CPU* cpuIndex);
+
+extern void sn_OpREP(sn_CPU* cpuIndex);
+extern void sn_OpSEP(sn_CPU* cpuIndex);
+
+extern void sn_OpSTA_addr(sn_CPU* cpuIndex);
+extern void sn_OpSTA_long(sn_CPU *cpuIndex);
+extern void sn_OpSTA_longX(sn_CPU* cpuIndex);
+
+extern void sn_OpSTZ_dp(sn_CPU* cpuIndex);
+extern void sn_OpSTZ_dpX(sn_CPU* cpuIndex);
+extern void sn_OpSTZ_addr(sn_CPU* cpuIndex);
+extern void sn_OpSTZ_addrX(sn_CPU* cpuIndex);
+
+extern void sn_OpTAX(sn_CPU* cpuIndex);
+extern void sn_OpTAY(sn_CPU* cpuIndex);
+extern void sn_OpTCD(sn_CPU* cpuIndex);
+extern void sn_OpTXY(sn_CPU* cpuIndex);
+extern void sn_OpTYA(sn_CPU* cpuIndex);
+extern void sn_OpTYX(sn_CPU* cpuIndex);
+
+extern void sn_OpXCE(sn_CPU* cpuIndex);

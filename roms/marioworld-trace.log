@@ -1,0 +1,43 @@
+00803b tya                    A:008d X:017d Y:03fd S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:203 F: 0
+00803c sta $7f8003,x [7f8180] A:03fd X:017d Y:03fd S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:207 F: 0
+008040 sec                    A:03fd X:017d Y:03fd S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:219 F: 0
+008041 sbc #$0004             A:03fd X:017d Y:03fd S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:222 F: 0
+008044 tay                    A:03f9 X:017d Y:03fd S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:228 F: 0
+008045 dex                    A:03f9 X:017d Y:03f9 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:232 F: 0
+008046 dex                    A:03f9 X:017c Y:03f9 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:235 F: 0
+008047 dex                    A:03f9 X:017b Y:03f9 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:239 F: 0
+008048 bpl $8034     [008034] A:03f9 X:017a Y:03f9 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:242 F: 0
+008034 lda #$008d             A:03f9 X:017a Y:03f9 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:248 F: 0
+008037 sta $7f8002,x [7f817c] A:008d X:017a Y:03f9 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:254 F: 0
+00803b tya                    A:008d X:017a Y:03f9 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:266 F: 0
+00803c sta $7f8003,x [7f817d] A:03f9 X:017a Y:03f9 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:269 F: 0
+008040 sec                    A:03f9 X:017a Y:03f9 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:281 F: 0
+008041 sbc #$0004             A:03f9 X:017a Y:03f9 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:285 F: 0
+008044 tay                    A:03f5 X:017a Y:03f9 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:291 F: 0
+008045 dex                    A:03f5 X:017a Y:03f5 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:294 F: 0
+008046 dex                    A:03f5 X:0179 Y:03f5 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:298 F: 0
+008047 dex                    A:03f5 X:0178 Y:03f5 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:301 F: 0
+008048 bpl $8034     [008034] A:03f5 X:0177 Y:03f5 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:305 F: 0
+008034 lda #$008d             A:03f5 X:0177 Y:03f5 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:310 F: 0
+008037 sta $7f8002,x [7f8179] A:008d X:0177 Y:03f5 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:316 F: 0
+00803b tya                    A:008d X:0177 Y:03f5 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:327 F: 0
+00803c sta $7f8003,x [7f817a] A:03f5 X:0177 Y:03f5 S:01ff D:0000 DB:00 nvmxdIzC V:  0 H:331 F: 0
+008040 sec                    A:03f5 X:0177 Y:03f5 S:01ff D:0000 DB:00 nvmxdIzC V:  1 H:  3 F: 0
+008041 sbc #$0004             A:03f5 X:0177 Y:03f5 S:01ff D:0000 DB:00 nvmxdIzC V:  1 H:  6 F: 0
+008044 tay                    A:03f1 X:0177 Y:03f5 S:01ff D:0000 DB:00 nvmxdIzC V:  1 H: 12 F: 0
+008045 dex                    A:03f1 X:0177 Y:03f1 S:01ff D:0000 DB:00 nvmxdIzC V:  1 H: 16 F: 0
+008046 dex                    A:03f1 X:0176 Y:03f1 S:01ff D:0000 DB:00 nvmxdIzC V:  1 H: 19 F: 0
+008047 dex                    A:03f1 X:0175 Y:03f1 S:01ff D:0000 DB:00 nvmxdIzC V:  1 H: 23 F: 0
+008048 bpl $8034     [008034] A:03f1 X:0174 Y:03f1 S:01ff D:0000 DB:00 nvmxdIzC V:  1 H: 26 F: 0
+008034 lda #$008d             A:03f1 X:0174 Y:03f1 S:01ff D:0000 DB:00 nvmxdIzC V:  1 H: 32 F: 0
+008037 sta $7f8002,x [7f8176] A:008d X:0174 Y:03f1 S:01ff D:0000 DB:00 nvmxdIzC V:  1 H: 38 F: 0
+00803b tya                    A:008d X:0174 Y:03f1 S:01ff D:0000 DB:00 nvmxdIzC V:  1 H: 50 F: 0
+00803c sta $7f8003,x [7f8177] A:03f1 X:0174 Y:03f1 S:01ff D:0000 DB:00 nvmxdIzC V:  1 H: 53 F: 0
+008040 sec                    A:03f1 X:0174 Y:03f1 S:01ff D:0000 DB:00 nvmxdIzC V:  1 H: 65 F: 0
+008041 sbc #$0004             A:03f1 X:0174 Y:03f1 S:01ff D:0000 DB:00 nvmxdIzC V:  1 H: 69 F: 0
+008044 tay                    A:03ed X:0174 Y:03f1 S:01ff D:0000 DB:00 nvmxdIzC V:  1 H: 75 F: 0
+008045 dex                    A:03ed X:0174 Y:03ed S:01ff D:0000 DB:00 nvmxdIzC V:  1 H: 78 F: 0
+008046 dex                    A:03ed X:0173 Y:03ed S:01ff D:0000 DB:00 nvmxdIzC V:  1 H: 82 F: 0
+008047 dex                    A:03ed X:0172 Y:03ed S:01ff D:0000 DB:00 nvmxdIzC V:  1 H: 85 F: 0
+008048 bpl $8034     [008034] A:03ed X:0171 Y:03ed S:01ff D:0000 DB:00 nvmxdIzC V:  1 H: 89 F: 0
+008034 lda #$008d     

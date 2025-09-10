@@ -1,0 +1,801 @@
+
+/* i'm tired. */
+
+#include <stdio.h>
+#include <malloc.h>
+#include <stdbool.h>
+#include <unistd.h>
+
+#include "vars/memory.h"
+#include "vars/rom.h"
+#include "vars/cpu.h"
+#include "rom_funcs.h"
+#include "bus_funcs.h"
+
+/* NOTE: Change bus to read actual PB(Program Bank)
+ * In the moment, they just read the byte from memory_wMap
+ * memory_wMap is a remanescent from my code, a buffer of
+ * 32KB + sizeof(rom) */
+
+/* Long are always 24-bit addresses*/
+
+/* Add with carry CPU operations */
+extern inline void snADC_const(sn_CPU* cpuIndex) {
+	if (!cpuIndex->sn_MFlag) {
+		holdLoAddr = *(++cpuIndex->sn_PC);
+		holdHiAddr = *(++cpuIndex->sn_PC);
+		holdAddr = (holdHiAddr << 8 | holdLoAddr);
+	} else {
+		holdAddr = *(++cpuIndex->sn_PC);
+	}
+	//memory_vMap[holdAddr] += 1 + (cpuIndex->sn_CFlagg ? 1 : 0);
+	cpuIndex->sn_Acc = holdAddr + cpuIndex->sn_CFlag;
+}
+
+extern inline void snADC_addr(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (holdHiAddr << 8 | holdLoAddr);
+	cpuIndex->sn_Acc = memory_vMap[holdAddr] + cpuIndex->sn_CFlag;
+}
+/*
+extern inline void snADC_long(sn_CPU* cpuIndex) {
+	holdLoAddr = memory_vMap[cpuIndex->sn_PC + 3];
+	holdHiAddr = memory_vMap[cpuIndex->sn_PC + 2];
+
+	holdAddr = holdHiAddr << 8 | holdLoAddr;
+	(memory_Bank[*(++cpuIndex->sn_PC)] + [holdAddr]);
+	cpuIndex -> sn_Acc = cpuIndex->sn_CFlag;
+}*/
+
+extern inline void snADC_dp(sn_CPU* cpuIndex) {
+	//cpuIndex->sn_Acc += memory_vMap[++cpuIndex->sn_PC + cpuIndex->sn_DP] + (cpuIndex->sn_CFlag);
+}
+
+extern inline void snADC_dpI(sn_CPU* cpuIndex) {
+
+}
+
+extern inline void snADC_dpI_long(sn_CPU* cpuIndex) {
+
+}
+
+extern inline void snADC_srS(sn_CPU* cpuIndex) {
+
+};
+
+extern inline void snADC_dpX(sn_CPU* cpuIndex) {};
+extern inline void snADC_dpI_longY(sn_CPU* cpuIndex) {};
+extern inline void snADC_addrY(sn_CPU* cpuIndex) {
+	holdAddr = *(++cpuIndex->sn_PC);
+	cpuIndex->sn_Acc = memory_vMap[holdAddr + cpuIndex->sn_Y] + cpuIndex->sn_CFlag;
+};
+
+extern inline void snADC_addrX(sn_CPU* cpuIndex) {
+	holdAddr = *(++cpuIndex->sn_PC);
+	cpuIndex->sn_Acc = memory_vMap[holdAddr + cpuIndex->sn_X] + cpuIndex->sn_CFlag;
+};
+
+/*extern inline void snADC_longX(sn_CPU* cpuIndex, rom* rom_Ptr) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = *(++cpuIndex->sn_PC) << 16 | holdHiAddr << 8 | holdLoAddr;
+
+	cpuIndex->sn_Acc = memory_vMap[((*cpuIndex->sn_PC % rom_Ptr->size) + rom_Ptr->MapArea)] + cpuIndex->sn_CFlag;
+};*/
+
+/* And accumulator with memory operations */
+extern void snAND_dpXI(sn_CPU* cpuIndex);
+extern void snAND_srS(sn_CPU* cpuIndex);
+extern void snAND_dp(sn_CPU* cpuIndex) {
+	holdAddr = *(++cpuIndex->sn_PC);
+	cpuIndex->sn_Acc &= memory_vMap[holdAddr + cpuIndex->sn_DP];
+};
+
+extern void snAND_dpI(sn_CPU* cpuIndex);
+
+extern void snAND_const(sn_CPU* cpuIndex) {
+	if (!cpuIndex->sn_MFlag) {
+		holdLoAddr = *(++cpuIndex->sn_PC);
+		holdHiAddr = *(++cpuIndex->sn_PC);
+		holdAddr = (holdHiAddr << 8 | holdLoAddr); 
+	} else {
+		holdAddr = *(++cpuIndex->sn_PC);
+	};
+
+	cpuIndex->sn_Acc &= holdAddr;
+}
+
+extern void snAND_addr(sn_CPU* cpuIndex) {
+	if (cpuIndex->sn_MFlag) {
+		holdLoAddr = *(++cpuIndex->sn_PC);
+		holdHiAddr = *(++cpuIndex->sn_PC);
+		holdAddr = (holdHiAddr << 8 | holdLoAddr); 
+	} else {
+		holdAddr = *(++cpuIndex->sn_PC);
+	};
+
+	cpuIndex->sn_Acc &= memory_vMap[holdAddr];
+}
+
+/*extern void snAND_long(sn_CPU* cpuIndex, rom* rom_Ptr) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (*(++cpuIndex->sn_PC) << 16 | holdHiAddr << 8 | holdLoAddr);
+
+	//cpuIndex->sn_Acc &= memory_vMap[(*cpuIndex->sn_PC % 0x200000) + rom_Ptr->MapArea];
+	//cpuIndex->sn_Acc &= memory_vMap[holdAddr - (rom_Ptr->size + rom_Ptr->MapArea)];
+	cpuIndex->sn_Acc &= memory_vMap[((*cpuIndex->sn_PC % rom_Ptr->size) + rom_Ptr->MapArea)];
+};*/
+
+extern void snAND_dpIY(sn_CPU* cpuIndex);
+extern void snAND_dpI(sn_CPU* cpuIndex);
+extern void snAND_srSIY(sn_CPU* cpuIndex);
+extern void snAND_dpX(sn_CPU* cpuIndex);
+extern void snAND_dpIY(sn_CPU* cpuIndex);
+extern void snAND_addrY(sn_CPU* cpuIndex);
+extern void snAND_addrX(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (holdHiAddr << 8 | holdLoAddr);
+
+	cpuIndex->sn_Acc &= memory_vMap[holdAddr + cpuIndex->sn_X];
+};
+
+/*extern void snAND_longX(sn_CPU* cpuIndex, rom* rom_Ptr) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = *(++cpuIndex->sn_PC) << 16 | holdHiAddr << 8 | holdLoAddr;
+	cpuIndex->sn_Acc &= memory_vMap[(*cpuIndex->sn_PC % rom_Ptr->size) + cpuIndex->sn_X + rom_Ptr->MapArea];
+};*/
+
+/* Performs a Bit shift to left */
+extern void snASL_dp(sn_CPU* cpuIndex) {
+	holdAddr = memory_vMap[*(++cpuIndex->sn_PC) + cpuIndex->sn_DP];
+	memory_vMap[holdAddr] <<= 1;
+}
+
+extern void snASL_Acc(sn_CPU* cpuIndex) {
+	cpuIndex->sn_Acc <<= 1;
+}
+
+extern void snASL_addr(sn_CPU* cpuIndex) {
+	/*holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (holdHiAddr << 8 | holdLoAddr);
+	memory_vMap[holdAddr] <<= 1;*/
+}
+
+extern void snASL_dpX(sn_CPU* cpuIndex) {
+	memory_vMap[cpuIndex->sn_DP + cpuIndex->sn_X] <<= 1;
+}
+
+extern void snASL_addrX(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (holdHiAddr << 8 | holdLoAddr);
+	memory_vMap[holdAddr + cpuIndex->sn_X] <<= 1;
+}
+
+
+/* Branch if the flags are set */
+extern void snBCC(sn_CPU* cpuIndex) {
+/*	holdAddr = *(++cpuIndex->sn_PC);
+	if (cpuIndex->sn_CFlag)
+		cpuIndex->sn_PC = ((s8) cpuIndex->sn_PC + memory_vMap[holdAddr]);*/
+};
+
+extern void snBCS(sn_CPU* cpuIndex) {
+/*	holdAddr = *(++cpuIndex->sn_PC);
+	if (!cpuIndex->sn_CFlag)
+		cpuIndex->sn_PC = ((s8) cpuIndex->sn_PC + memory_vMap[holdAddr]);*/
+};
+
+extern void snBEQ(sn_CPU* cpuIndex) {
+	/*holdAddr = *(++cpuIndex->sn_PC);
+	cpuIndex->sn_PC = ((s8) cpuIndex->sn_PC + memory_vMap[holdAddr]);
+*/
+};
+
+/* This opcodes test bits with the corrsponding one */
+extern void snBIT_dp(sn_CPU* cpuIndex);
+extern void snBIT_addr(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = holdHiAddr << 8 | holdLoAddr;
+
+	(cpuIndex->sn_NFlag == ((memory_vMap[holdAddr] & cpuIndex->sn_Acc) & 0x80) ? 1 : 0);
+	(cpuIndex->sn_VFlag == ((memory_vMap[holdAddr] & cpuIndex->sn_Acc) & 0x60) ? 1 : 0);
+	(cpuIndex->sn_ZFlag == (memory_vMap[holdAddr] & cpuIndex->sn_Acc == 0) ? 1 : 0);
+};
+
+extern void snBIT_dpX(sn_CPU* cpuIndex);
+extern void snBIT_addrX(sn_CPU* cpuIndex);
+extern void snBIT_const(sn_CPU* cpuIndex);
+
+/* Branch to a specific address */
+extern void snBRA(sn_CPU* cpuIndex) {
+	holdAddr = ((s16) *(cpuIndex->sn_PC)) + memory_vMap[*(cpuIndex->sn_PC) + 1];
+	cpuIndex->sn_PC += holdAddr;	
+}
+
+extern void snBPL(sn_CPU* cpuIndex) {
+/*	if (!cpuIndex->sn_NFlag) {
+		printf("%X \n", cpuIndex->sn_PC + (s8) ((u8) (*(sn_Mread(cpuIndex, true, 1)))));
+		//cpuIndex->sn_PC = (u8*) (sn_Mread(cpuIndex, true, 1) - 22);
+
+		sleep(5);
+	}
+*/
+};
+
+/* Clear the corresponding flags */
+extern void snCLC(sn_CPU* cpuIndex) {
+	cpuIndex->sn_CFlag = 0;
+};
+extern void snCLD(sn_CPU* cpuIndex) {
+	cpuIndex->sn_DFlag = 0;
+};
+extern void snCLI(sn_CPU* cpuIndex) {
+	cpuIndex->sn_IFlag = 0;
+};
+extern void snCLV(sn_CPU* cpuIndex){
+	cpuIndex->sn_VFlag = 0;
+};
+
+/* Do comparations */
+extern void snCMP_dpIX(sn_CPU* cpuIndex);
+extern void snCMP_srS(sn_CPU* cpuIndex);
+
+extern void snCMP_dp(sn_CPU* cpuIndex) {
+	holdAddr = memory_vMap[++cpuIndex->sn_DP];
+//	cpuIndex->sn_Acc -= memory_vMap[holdAddr + cpuIndex->sn_DP];
+};
+
+/*extern void snCMP_dpI_long(sn_CPU* cpuIndex) {
+	holdLoAddr = memory_vMap[cpuIndex->sn_DP + ++cpuIndex->sn_PC];
+	holdHiAddr = memory_vMap[cpuIndex->sn_DP + ++cpuIndex->sn_PC];
+	holdAddr = memory_vMap[cpuIndex->sn_DP + ++cpuIndex->sn_PC] << 16 | holdHiAddr << 8 | holdLoAddr;
+//	cpuIndex->sn_Acc -= memory_vMap[holdAddr];
+};*/
+
+extern void snCMP_const(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = holdHiAddr << 8 | holdLoAddr;
+//	cpuIndex->sn_Acc -= holdAddr;
+};
+
+extern void snCMP_addr(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = holdHiAddr << 8 | holdLoAddr;
+	(cpuIndex->sn_NFlag = (cpuIndex->sn_Acc - memory_vMap[holdAddr]) < 0 ? 1 : 0);
+	(cpuIndex->sn_ZFlag = (cpuIndex->sn_Acc - memory_vMap[holdAddr]) == 0 ? 1 : 0);
+
+	/* 8-bit */
+	if (cpuIndex->sn_MFlag) {
+		(cpuIndex->sn_CFlag = ((cpuIndex->sn_Acc - memory_vMap[holdAddr]) & 0x100) ? 1 : 0);
+	} else {
+		/* 16-bit */
+		(cpuIndex->sn_CFlag = ((cpuIndex->sn_Acc - memory_vMap[holdAddr]) & 0x10000) ? 1 : 0);
+	}
+};
+/*
+extern void snCMP_long(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = *(++cpuIndex->sn_PC) << 16 | holdHiAddr << 8 | holdLoAddr;
+	//cpuIndex->sn_Acc -= memory_vMap[holdAddr];
+};*/
+
+extern void snCMP_dpIY(sn_CPU* cpuIndex);
+extern void snCMP_dpI(sn_CPU* cpuIndex);
+extern void snCMP_srSIY(sn_CPU* cpuIndex);
+extern void snCMP_dpX(sn_CPU* cpuIndex) {
+	//holdAddr = memory_vMap[++cpuIndex->sn_PC + cpuIndex->sn_DP + cpuIndex->sn_X];
+	cpuIndex->sn_Acc -= memory_vMap[holdAddr];
+};
+
+extern void snCMP_dpI_longY(sn_CPU* cpuIndex);
+extern void snCMP_addrY(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (holdHiAddr << 8 | holdLoAddr) + cpuIndex->sn_Y;
+	cpuIndex->sn_Acc -= memory_vMap[holdAddr];
+};
+
+extern void snCMP_addrX(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (holdHiAddr << 8 | holdLoAddr) + cpuIndex->sn_X;
+	cpuIndex->sn_Acc -= memory_vMap[holdAddr];
+};
+
+
+/*extern void snCMP_longX(sn_CPU* cpuIndex, rom* rom_Ptr) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = *(++cpuIndex->sn_PC) << 16 | holdHiAddr << 8 | holdLoAddr;
+
+	cpuIndex->sn_Acc -= memory_vMap[((*cpuIndex->sn_PC % rom_Ptr->size) + cpuIndex->sn_X)];
+};*/
+
+/* Decrement 1 to registers */
+extern void snDEC_Acc(sn_CPU* cpuIndex) {
+	cpuIndex->sn_Acc -= 1;
+};
+
+extern void snDEC_dp(sn_CPU* cpuIndex) {
+	holdAddr = *(++cpuIndex->sn_PC);
+	("dec, %X$(%X)\n", cpuIndex->sn_DP, holdAddr);
+	memory_vMap[holdAddr + cpuIndex->sn_DP] -= 1;
+};
+
+extern void snDEC_addr(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (holdHiAddr << 8 | holdLoAddr);
+	memory_vMap[holdAddr] -= 1;
+};
+
+extern void snDEC_dpX(sn_CPU* cpuIndex) {
+	//holdAddr = memory_vMap[++cpuIndex->sn_PC + cpuIndex->sn_DP + cpuIndex->sn_X];
+	memory_vMap[holdAddr] -= 1;
+};
+
+extern void snDEC_addrX(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (holdHiAddr << 8 | holdLoAddr);
+	memory_vMap[holdAddr + cpuIndex->sn_X] -= 1;
+};
+
+extern void snDEX(sn_CPU* cpuIndex) {
+	cpuIndex->sn_X -= 1;
+	cpuIndex->sn_NFlag = ((s16) cpuIndex->sn_X < 0) ? 1 : cpuIndex->sn_NFlag;
+	cpuIndex->sn_ZFlag = ((s16) cpuIndex->sn_X == 0) ? 1 : cpuIndex->sn_ZFlag;
+};
+
+extern void snDEY(sn_CPU* cpuIndex) {
+	cpuIndex->sn_Y -= 1;
+	cpuIndex->sn_NFlag = cpuIndex->sn_Y < 0 ? 1 : cpuIndex->sn_NFlag;
+	cpuIndex->sn_ZFlag = cpuIndex->sn_Y == 0 ? 1 : cpuIndex->sn_ZFlag;
+};
+
+/* Load to Accumulator according to the operation */
+extern void snLDA_dp(sn_CPU* cpuIndex) {
+	holdAddr = *(++cpuIndex->sn_PC);
+	cpuIndex->sn_Acc = memory_vMap[holdAddr + cpuIndex->sn_DP];
+	("LDA: %X\n", cpuIndex->sn_Acc);
+};
+
+extern void snLDA_dpI_long(sn_CPU* cpuIndex);
+
+extern void snLDA_const(sn_CPU* cpuIndex) {
+	if (!cpuIndex->sn_MFlag) {
+		cpuIndex->sn_Acc = *sn_Mread(cpuIndex, 2);
+	} else {
+		cpuIndex->sn_Acc = (u8) *sn_Mread(cpuIndex, 1);
+		//++cpuIndex->sn_PC;
+	}
+};
+
+extern void snLDA_addr(sn_CPU* cpuIndex) {
+	cpuIndex->sn_Acc = *sn_Mread(cpuIndex, 2);
+};
+
+/*extern void snLDA_long(sn_CPU* cpuIndex, rom* rom_Ptr) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = *(++cpuIndex->sn_PC) << 16 | holdHiAddr << 8 | holdLoAddr;
+	//cpuIndex->sn_Acc = holdAddr;
+	//cpuIndex->sn_Acc &= memory_vMap[holdAddr - (rom_Ptr->size + rom_Ptr->MapArea)];
+	cpuIndex->sn_Acc &= memory_vMap[((*cpuIndex->sn_PC % rom_Ptr->size)) + rom_Ptr->MapArea];
+	("LDA long: %X\n", holdAddr);
+};*/
+
+extern void snLDA_dpX(sn_CPU* cpuIndex) {
+	//holdAddr = memory_vMap[++cpuIndex->sn_PC + cpuIndex->sn_DP + cpuIndex->sn_X];
+	cpuIndex->sn_Acc = memory_vMap[holdAddr];
+};
+
+extern void snLDA_addrY(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (holdHiAddr << 8 | holdLoAddr) + cpuIndex->sn_Y;
+	cpuIndex->sn_Acc = memory_vMap[holdAddr];
+};
+
+extern void snLDA_addrX(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (holdHiAddr << 8 | holdLoAddr) + cpuIndex->sn_X;
+	cpuIndex->sn_Acc = memory_vMap[holdAddr];
+};
+/*
+extern void snLDA_longX(sn_CPU* cpuIndex, rom* rom_Ptr) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (*(++cpuIndex->sn_PC) << 16 | holdHiAddr << 8 | holdLoAddr) + cpuIndex->sn_X;
+	cpuIndex->sn_Acc = memory_vMap[((*cpuIndex->sn_PC % rom_Ptr->size)) + rom_Ptr->MapArea];
+};*/
+
+extern void snLDX_const(sn_CPU* cpuIndex) {
+/*	if (!cpuIndex->sn_XFlag) {
+		holdLoAddr = *(++cpuIndex->sn_PC);
+		holdHiAddr = *(++cpuIndex->sn_PC);
+		holdAddr = holdHiAddr << 8 | holdLoAddr;
+	} else {
+		holdAddr = *(++cpuIndex->sn_PC);
+	}
+	cpuIndex->sn_X = holdAddr;
+*/
+	if (!cpuIndex->sn_XFlag) {
+		cpuIndex->sn_X = *sn_Mread(cpuIndex, 2);
+	} else {
+		cpuIndex->sn_X = (u8) *sn_Mread(cpuIndex, 1);
+	}
+};
+
+extern void snLDX_dp(sn_CPU* cpuIndex) {
+	holdAddr = *(++cpuIndex->sn_PC) + cpuIndex->sn_DP;
+	cpuIndex->sn_X = memory_vMap[holdAddr];
+};
+
+extern void snLDX_addr(sn_CPU* cpuIndex) {
+/*	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = holdHiAddr << 8 | holdLoAddr;
+	cpuIndex->sn_X = memory_vMap[holdAddr];
+*/
+
+	cpuIndex->sn_X = *sn_Mread(cpuIndex, 2);
+};
+
+extern void snLDX_dpY(sn_CPU* cpuIndex) {
+	holdAddr = *(++cpuIndex->sn_PC) + cpuIndex->sn_Y;
+	cpuIndex->sn_X = memory_vMap[holdAddr];
+};
+
+extern void snLDX_addrY(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (holdHiAddr << 8 | holdLoAddr) + cpuIndex->sn_Y;
+	cpuIndex->sn_X = memory_vMap[holdAddr];
+};
+
+extern void snLDY_const(sn_CPU* cpuIndex) {
+	if (!cpuIndex->sn_XFlag) {
+		cpuIndex->sn_Y = *sn_Mread(cpuIndex, 2);
+	} else {
+		cpuIndex->sn_Y = (u8) *sn_Mread(cpuIndex, 1);
+	}
+};
+extern void snINC_Acc(sn_CPU* cpuIndex) {
+	cpuIndex->sn_Acc += 1;
+};
+
+extern void snINC_dp(sn_CPU* cpuIndex) {
+	//holdAddr = memory_vMap[++cpuIndex->sn_PC + cpuIndex->sn_DP];
+	memory_vMap[holdAddr] += 1;
+};
+
+extern void snINC_addr(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (holdHiAddr << 8 | holdLoAddr);
+	memory_vMap[holdAddr] += 1;
+};
+
+extern void snINC_dpX(sn_CPU* cpuIndex) {
+	//holdAddr = memory_vMap[++cpuIndex->sn_PC + cpuIndex->sn_DP + cpuIndex->sn_X];
+//	memory_vMap[holdAddr] += 1;
+};
+
+extern void snINC_addrX(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (holdHiAddr << 8 | holdLoAddr) + cpuIndex->sn_X;
+	memory_vMap[holdAddr] += 1;
+};
+
+extern void snINX(sn_CPU* cpuIndex) {
+	cpuIndex->sn_X += 1;
+};
+
+extern void snINY(sn_CPU* cpuIndex) {
+	cpuIndex->sn_X += 1;
+};
+
+extern void snJMP_addr(sn_CPU* cpuIndex) {};
+
+extern void snJMP_long(sn_CPU* cpuIndex) {
+/*	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = ((*(++cpuIndex->sn_PC) << 16 | holdHiAddr << 8 | holdLoAddr) % (rom_Ptr->size)) + rom_Ptr->MapArea;
+
+	("PC jumped to %X with value: %X\n", holdAddr, memory_vMap[holdAddr]);
+	cpuIndex->sn_PC = holdAddr;
+	//("%X\n",(*cpuIndex->sn_PC % rom_Ptr->MapArea));*/
+	cpuIndex->sn_PC = sn_Mread(cpuIndex, 3);
+	printf("Jump to [%X]: %X \n", cpuIndex->sn_PB, *cpuIndex->sn_PC);
+	sleep(10);
+};
+
+extern void snJSR_addr(sn_CPU* cpuIndex) {
+	/*
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = holdHiAddr << 8 | holdLoAddr;
+	//cpuIndex->sn_subPC = *cpuIndex->sn_PC;
+	("Subroutine to 0x%X\n", holdAddr);
+	//cpuIndex->sn_PC = holdAddr;*/
+	
+	cpuIndex->sn_PC =  sn_Mread(cpuIndex, 2);
+	printf("Jump to subroutine[%X]: %X \n", cpuIndex->sn_PB, *cpuIndex->sn_PC);
+	sleep(1);
+};
+
+extern void snJSR_long(sn_CPU* cpuIndex, rom* rom_Ptr) {
+//	printf("JSR long \n");
+	//holdAddr = sn_Mread(cpuIndex, *++cpuIndex->sn_PC, 3);
+	//u32* holdPoAddr = sn_Mread(cpuIndex, *cpuIndex->sn_PC, 3);
+	cpuIndex->sn_PC = sn_Mread(cpuIndex, 3);
+	sleep(2);
+};
+
+
+extern void snJSR_addrXI() {};
+
+extern void snORA_addr(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (holdHiAddr << 8 | holdLoAddr);
+	cpuIndex->sn_Acc |= memory_vMap[holdAddr];
+};
+/*
+extern void snORA_long(sn_CPU* cpuIndex, rom* rom_Ptr) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = *(++cpuIndex->sn_PC) << 16 | holdHiAddr << 8 | holdLoAddr;
+	holdAddr = ((*(++cpuIndex->sn_PC) << 16 | holdHiAddr << 8 | holdLoAddr) % (rom_Ptr->size)) + rom_Ptr->MapArea;
+	cpuIndex->sn_Acc |= memory_vMap[holdAddr];
+};*/
+
+extern void snORA_const(sn_CPU* cpuIndex) {
+	if (cpuIndex->sn_MFlag) {
+		holdAddr = *(++cpuIndex->sn_PC);
+	} else {
+		holdLoAddr = *(++cpuIndex->sn_PC);
+		holdHiAddr = *(++cpuIndex->sn_PC);
+		holdAddr = (holdHiAddr << 8 | holdLoAddr);
+	}
+	cpuIndex->sn_Acc |= holdAddr;
+	//sleep(1);
+};
+
+extern void snORA_addrY(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (holdHiAddr << 8 | holdLoAddr) + cpuIndex->sn_Y;
+	("OR Acc: %X Memory: %X \n", cpuIndex->sn_Acc, memory_vMap[holdAddr]);
+	cpuIndex->sn_Acc |= memory_vMap[holdAddr];
+	//sleep(1);
+};
+
+extern void snORA_addrX(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (holdHiAddr << 8 | holdLoAddr) + cpuIndex->sn_X;
+	("OR Acc: %X Memory: %X\n", cpuIndex->sn_Acc, memory_vMap[holdAddr]);
+	cpuIndex->sn_Acc |= memory_vMap[holdAddr];
+	//sleep(1);
+};
+
+/*
+extern void snORA_longX(sn_CPU* cpuIndex,  rom* rom_Ptr) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = (((*(++cpuIndex->sn_PC) << 16 | holdHiAddr << 8 | holdLoAddr) + cpuIndex->sn_X) % rom_Ptr->size) + rom_Ptr->MapArea;
+	("OR Acc: %X Memory: %X\n", cpuIndex->sn_Acc, memory_vMap[holdAddr]);
+	cpuIndex->sn_Acc |= memory_vMap[holdAddr];
+	//sleep(1);
+};*/
+
+extern void snREP_const(sn_CPU* cpuIndex) {
+	*sn_Mread(cpuIndex, 1);
+	cpuIndex->sn_CFlag = (*cpuIndex->sn_PC & 0x80 ? 0 : cpuIndex->sn_CFlag);
+	cpuIndex->sn_VFlag = (*cpuIndex->sn_PC & 0x40 ? 0 : cpuIndex->sn_VFlag);
+	cpuIndex->sn_MFlag = (*cpuIndex->sn_PC & 0x20 ? 0 : cpuIndex->sn_MFlag);
+	cpuIndex->sn_XFlag = (*cpuIndex->sn_PC & 0x10 ? 0 : cpuIndex->sn_XFlag);
+	cpuIndex->sn_DFlag = (*cpuIndex->sn_PC & 0x08 ? 0 : cpuIndex->sn_DFlag);
+	cpuIndex->sn_IFlag = (*cpuIndex->sn_PC & 0x04 ? 0 : cpuIndex->sn_IFlag);
+	cpuIndex->sn_ZFlag = (*cpuIndex->sn_PC & 0x02 ? 0 : cpuIndex->sn_ZFlag);
+	cpuIndex->sn_EFlag = (*cpuIndex->sn_PC & 0x01 ? 0 : cpuIndex->sn_EFlag);
+};
+
+extern void snSEC(sn_CPU* cpuIndex) {
+	cpuIndex->sn_CFlag = 1;
+};
+
+extern void snSED(sn_CPU* cpuIndex) {
+	cpuIndex->sn_DFlag = 1;
+};
+
+extern void snSEI(sn_CPU* cpuIndex) {
+	cpuIndex->sn_IFlag = 1;
+};
+
+extern void snSEP(sn_CPU* cpuIndex) {
+	*sn_Mread(cpuIndex, 1);
+	cpuIndex->sn_CFlag = (*cpuIndex->sn_PC & 0x80 ? 1 : cpuIndex->sn_CFlag);
+	cpuIndex->sn_VFlag = (*cpuIndex->sn_PC & 0x40 ? 1 : cpuIndex->sn_VFlag);
+	cpuIndex->sn_MFlag = (*cpuIndex->sn_PC & 0x20 ? 1 : cpuIndex->sn_MFlag);
+	cpuIndex->sn_XFlag = (*cpuIndex->sn_PC & 0x10 ? 1 : cpuIndex->sn_XFlag);
+	cpuIndex->sn_DFlag = (*cpuIndex->sn_PC & 0x08 ? 1 : cpuIndex->sn_DFlag);
+	cpuIndex->sn_IFlag = (*cpuIndex->sn_PC & 0x04 ? 1 : cpuIndex->sn_IFlag);
+	cpuIndex->sn_ZFlag = (*cpuIndex->sn_PC & 0x02 ? 1 : cpuIndex->sn_ZFlag);
+	cpuIndex->sn_EFlag = (*cpuIndex->sn_PC & 0x01 ? 1 : cpuIndex->sn_EFlag);
+}
+
+extern void snSTA_dpXI(sn_CPU* cpuIndex);
+extern void snSTA_srS(sn_CPU* cpuIndex);
+extern void snSTA_dp(sn_CPU* cpuIndex) {
+/*	holdAddr = *(++cpuIndex->sn_PC) + cpuIndex->sn_DP;
+	memory_vMap[holdAddr] = cpuIndex->sn_Acc;
+	printf("Storing %X to address $06%X\n", cpuIndex->sn_Acc, holdAddr);
+	//sleep(1);*/
+	sn_Mwrite(cpuIndex, *(sn_Mread(cpuIndex, 1)) + cpuIndex->sn_DP, cpuIndex->sn_Acc);
+};
+
+extern void snSTA_dpI_long(sn_CPU* cpuIndex);
+
+extern void snSTA_addr(sn_CPU* cpuIndex) {
+	sn_Mwrite(cpuIndex, *(sn_Mread(cpuIndex, 2)), cpuIndex->sn_Acc);
+	//printf("Storing %X to accumulator\n", cpuIndex->sn_Acc);
+	//printf("Storing %X to accumulator\n", cpuIndex->sn_Acc);
+	//sleep(1);
+};
+
+extern void snSTA_long(sn_CPU* cpuIndex) {
+	sn_Mwrite(cpuIndex, (*(sn_Mread(cpuIndex, 3))), cpuIndex->sn_Acc);
+	//sn_Mwrite(cpuIndex, cpuIndex->sn_Acc, 3);
+	//printf("Storing %X to accumulator\n", cpuIndex->sn_Acc);
+};
+
+/*extern void snSTA_long(sn_CPU* cpuIndex, rom* rom_Ptr) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = *(++cpuIndex->sn_PC) << 16 | holdHiAddr << 8 | holdLoAddr;
+
+	memory_vMap[(*cpuIndex->sn_PC % rom_Ptr->size)] = cpuIndex->sn_Acc;
+	printf("Storing %X to address $%06X\n", cpuIndex->sn_Acc, (*cpuIndex->sn_PC % rom_Ptr->size) + rom_Ptr->MapArea);
+	//sleep(1);
+	//("Storing to memory\n", cpuIndex->sn_Acc);
+};*/
+
+extern void snSTA_dpIY(sn_CPU* cpuIndex);
+extern void snSTA_dpI(sn_CPU* cpuIndex);
+extern void snSTA_dpIY(sn_CPU* cpuIndex);
+
+extern void snSTA_addrY(sn_CPU* cpuIndex) {
+	sn_Mwrite(cpuIndex, *(sn_Mread(cpuIndex, 2)) + cpuIndex->sn_Y, cpuIndex->sn_Acc);
+};
+
+extern void snSTA_addrX(sn_CPU* cpuIndex) {
+	sn_Mwrite(cpuIndex, *(sn_Mread(cpuIndex, 2)) + cpuIndex->sn_X, cpuIndex->sn_Acc);
+};
+
+extern void snSTA_longX(sn_CPU* cpuIndex) {
+	sn_Mwrite(cpuIndex, *(sn_Mread(cpuIndex, 3)) + cpuIndex->sn_X, cpuIndex->sn_Acc);
+};
+
+extern void snSTY_addr(sn_CPU* cpuIndex) {
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = holdHiAddr << 8 | holdLoAddr;
+	memory_vMap[holdAddr] = cpuIndex->sn_Y;
+};
+
+extern void snSTY_dp(sn_CPU* cpuIndex) {
+	//holdAddr = memory_vMap[++cpuIndex->sn_PC + cpuIndex->sn_DP];
+	memory_vMap[holdAddr] = cpuIndex->sn_Y;
+};
+
+extern void snSTY_dpX(sn_CPU* cpuIndex) {
+//	holdAddr = memory_vMap[++cpuIndex->sn_PC + cpuIndex->sn_DP + cpuIndex->sn_X];
+	memory_vMap[holdAddr] = cpuIndex->sn_Y;
+};
+
+extern void snSTZ_dp(sn_CPU* cpuIndex) {
+//	holdAddr = memory_vMap[++cpuIndex->sn_PC + cpuIndex->sn_DP];
+	memory_vMap[holdAddr + cpuIndex->sn_DP] = 0;
+	("Storing zero at: 0x%06X\n", holdAddr);
+};
+
+extern void snSTZ_dpX(sn_CPU* cpuIndex) {
+	holdAddr = *(++cpuIndex->sn_PC);
+	memory_vMap[holdAddr + cpuIndex->sn_DP + cpuIndex->sn_X] = 0;
+	("Storing 0 to 0x%06X\n", holdAddr + cpuIndex->sn_DP + cpuIndex->sn_X);
+};
+
+extern void snSTZ_addr(sn_CPU* cpuIndex) {
+	/*
+	holdLoAddr = *(++cpuIndex->sn_PC);
+	holdHiAddr = *(++cpuIndex->sn_PC);
+	holdAddr = holdHiAddr << 8 | holdLoAddr;
+	memory_vMap[holdAddr] = 0;*/
+	Sn_Mwrite(cpuIndex, (*sn_Mread(cpuIndex, 2)), 0);
+};
+
+extern void snSTZ_addrX(sn_CPU* cpuIndex) {
+/*	holdLoAddr = (*(++cpuIndex->sn_PC));
+	holdHiAddr = (*(++cpuIndex->sn_PC));
+	holdAddr = holdHiAddr << 8 | holdLoAddr;
+
+	memory_vMap[holdAddr + cpuIndex->sn_X] = 0;*/
+	//sn_Mwrite(cpuIndex->sn_X + cpuIndex, 0, 2);
+	sn_Mwrite(cpuIndex, (*sn_Mread(cpuIndex, 2) + cpuIndex->sn_X), 0);
+};
+
+extern void snTAX(sn_CPU* cpuIndex) {
+	cpuIndex->sn_X = cpuIndex->sn_Acc;
+};
+
+extern void snTAY(sn_CPU* cpuIndex) {
+	cpuIndex->sn_Y = cpuIndex->sn_Acc;
+};
+
+extern void snTCD(sn_CPU* cpuIndex) {
+	cpuIndex->sn_DP = cpuIndex->sn_Acc;
+};
+
+extern void snTCS(sn_CPU* cpuIndex) {
+	cpuIndex->sn_DP;
+};
+
+extern void snTDC(sn_CPU* cpuIndex) {
+	cpuIndex->sn_Acc = ((cpuIndex->sn_DP == 0) ? cpuIndex->sn_Acc : 0);
+};
+
+extern void snTSB_addr(sn_CPU* cpuIndex) {
+//	*sn_Mread(cpuIndex, true, 3) &= cpuIndex->sn_Acc;
+/*	cpuIndex->sn_CFlag = (*cpuIndex->sn_PC & 0x80 ? 1 : cpuIndex->sn_CFlag);
+	cpuIndex->sn_VFlag = (*cpuIndex->sn_PC & 0x40 ? 1 : cpuIndex->sn_VFlag);
+	cpuIndex->sn_MFlag = (*cpuIndex->sn_PC & 0x20 ? 1 : cpuIndex->sn_MFlag);
+	cpuIndex->sn_XFlag = (*cpuIndex->sn_PC & 0x10 ? 1 : cpuIndex->sn_XFlag);
+	cpuIndex->sn_DFlag = (*cpuIndex->sn_PC & 0x08 ? 1 : cpuIndex->sn_DFlag);
+	cpuIndex->sn_IFlag = (*cpuIndex->sn_PC & 0x04 ? 1 : cpuIndex->sn_IFlag);
+	cpuIndex->sn_ZFlag = (*cpuIndex->sn_PC & 0x02 ? 1 : cpuIndex->sn_ZFlag);
+	cpuIndex->sn_EFlag = (*cpuIndex->sn_PC & 0x01 ? 1 : cpuIndex->sn_EFlag);*/
+};
+
+extern void snTXA(sn_CPU* cpuIndex) {
+	cpuIndex->sn_Acc = cpuIndex->sn_X;
+};
+
+extern void snTXY(sn_CPU* cpuIndex) {
+	cpuIndex->sn_Y = cpuIndex->sn_X;
+};
+
+extern void snTYA(sn_CPU* cpuIndex) {
+	cpuIndex->sn_Acc = cpuIndex->sn_Y;
+};
+
+extern void snTYX(sn_CPU* cpuIndex) {
+	cpuIndex->sn_X = cpuIndex->sn_Y;
+};
+
+extern void snWAI(sn_CPU* cpuIndex) {
+	while (!(cpuIndex->sn_IFlag)) {}
+};
+
+extern void snXCE(sn_CPU* cpuIndex) {
+	u16 temp_C = cpuIndex->sn_CFlag;
+	u16 temp_E = cpuIndex->sn_EFlag;
+
+	cpuIndex->sn_EFlag = temp_C;
+	cpuIndex->sn_CFlag = temp_E;
+};
+

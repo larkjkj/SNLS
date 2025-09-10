@@ -1,414 +1,168 @@
 #include <stdio.h>
-#include <unistd.h>
-#include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "memory_funcs.h"
+#include "bus_funcs.h"
+#include "ppu_funcs.h"
+
 #include "cpu_opcodes.h"
-#include "vars/bus.h"
+#include "interpreter.h"
+
+#include "vars/memory.h"
 #include "vars/rom.h"
 #include "vars/cpu.h"
 
-#include "interpreter.h"
+//#include "interpreter.h"
 
 void rcCPU(sn_CPU* cpuIndex, rom* rom_Ptr) {
-	printf("CPU started \n");
-	/* This is just the start of the ROM Title 
-	 * Nothing interesting at all */
-//	printf("What we've got? 0x%X \n", memory_vMap[rom_Ptr->MapArea]);
-		
-	cpuIndex->sn_PC = 0;
+
+	/* POWERON */
+	cpuIndex->sn_PB = 0x00;
+	cpuIndex->sn_DBR = 0x00;
 	cpuIndex->sn_EFlag = 1;
-	printf("EMULATION MODE\n");
-	cpuIndex->sn_PC = (0x8203);
+	if (cpuIndex->sn_EFlag) {
+		cpuIndex->sn_XFlag = 1;
+		cpuIndex->sn_MFlag = 1;
+	}
 
-	/*  This line forces emulation-mode to be off (Disables 6502 compatibility) */
+	//cpuIndex->sn_PC = (rom_Ptr->resetV - 0x8000);cpuIndex->sn_PC = (u32*)(memory_Bank[cpuIndex->sn_PB] + 0x203);
+	//cpuIndex->sn_PC = (memory_Bank[cpuIndex->sn_PB] + 0x203);
+	//cpuIndex->sn_PC = (memory_Bank[cpuIndex->sn_PB] + (rom_Ptr->resetV));
+	//cpuIndex->sn_PC = *(mBank[cpuIndex->sn_PB] + rom_Ptr->resetV);
+	cpuIndex->sn_PC = m_Buf[0x0].mMap[0x8000];
+	if (cpuIndex->sn_PC == NULL) {
+	    printf("Error, PC is null, something gone wrong with mapping? \n");
+		exit(1);
+	}
+	printf("CPU started with %X \n", *cpuIndex->sn_PC);
+
+
+	//printf("%X \n", *(sn_Mread_u16(cpuIndex)+15));
 	while (1) {
-		switch ((memory_vMap[cpuIndex->sn_PC])) {
-			case _adc_dp:
-				snADC_dp(cpuIndex);
-			break;
+		printf("PC: $%02X DP: %04X A: %04X X: %X\n",*cpuIndex->sn_PC, cpuIndex->sn_DP, cpuIndex->sn_Acc, cpuIndex->sn_X);
+		printf("E: %d N: %d V: %d M: %d X: %d D: %d I: %d Z: %d C: %d \n", \
+			cpuIndex->sn_EFlag, cpuIndex->sn_NFlag, cpuIndex->sn_VFlag, cpuIndex->sn_MFlag, cpuIndex->sn_XFlag, cpuIndex->sn_DFlag, cpuIndex->sn_IFlag, cpuIndex->sn_ZFlag, cpuIndex->sn_CFlag);
 
-			case _adc_const:
-				snADC_const(cpuIndex);
+		//printf("%X \n", emuMemory.memory_rPPU[0x2140]);
+		switch (*(cpuIndex->sn_PC)) {
+			case _bmi:
+				sn_OpBMI(cpuIndex);
 			break;
-
-			case _adc_addr:
-				snADC_addr(cpuIndex);
+			case _bpl:
+				sn_OpBPL(cpuIndex);
 			break;
-
-			case _adc_l:
-				snADC_long(cpuIndex, rom_Ptr);
-			break;
-
-			case _adc_addr_y:
-				snADC_addrY(cpuIndex);
-			break;
-
-			case _adc_addr_x:
-				snADC_addrX(cpuIndex);
-			break;
-
-			case _adc_long_x:
-				snADC_longX(cpuIndex, rom_Ptr);
-			break;
-	
-			case _and_const:
-				snAND_const(cpuIndex);
-			break;
-
-			case _and_addr:
-				snAND_addr(cpuIndex);
-			break;
-			
-			case _and_l:
-				snAND_long(cpuIndex, rom_Ptr);
-			break;
-
-			case _and_addr_y:
-			break;
-			case _and_addr_x:
-				snAND_addrX(cpuIndex);
-			break;
-
-			/* ASL right here */
-			case _asl_dp:
-				snASL_dp(cpuIndex);
-			break;
-
-			case _asl_a:
-				snASL_Acc(cpuIndex);
-			break;
-			
-			case _asl_dp_x:
-				snASL_dpX(cpuIndex);
-			break;
-
-			case _asl_addr_x:
-				snASL_addrX(cpuIndex);
-			break;
-			
-			case _bcc:
-				snBCC(cpuIndex);
-			break;
-
-			case _bcs:
-				snBCS(cpuIndex);
-			break;
-
-			case _beq:
-				snBEQ(cpuIndex);
-			break;
-
-			case _bit_addr:
-				snBIT_addr(cpuIndex);
-			break;
-
 			case _bra:
-				snBRA(cpuIndex);
+			    sn_OpBRA(cpuIndex);
 			break;
-
 			case _clc:
-				snCLC(cpuIndex);
+				sn_OpCLC(cpuIndex);
 			break;
-
 			case _cld:
-				snCLD(cpuIndex);
+				sn_OpCLD(cpuIndex);
 			break;
-
 			case _cli:
-				snCLI(cpuIndex);
+				sn_OpCLI(cpuIndex);
 			break;
-
 			case _clv:
-				snCLV(cpuIndex);
+				sn_OpCLV(cpuIndex);
 			break;
-
-			case _cmp_dp:
-				snCMP_dp(cpuIndex);
+			case _dea:
+				sn_OpDEA(cpuIndex);
 			break;
-		
-			case _cmp_const:
-				snCMP_const(cpuIndex);
-			break;
-			
-			case _cmp_addr:
-				snCMP_addr(cpuIndex);
-			break;
-			
-			case _cmp_l:
-				snCMP_long(cpuIndex, rom_Ptr);
-			break;
-			
-			case _cmp_dp_indr_y:
-			break;
-
-			case _cmp_dp_indr:
-			break;
-
-			case _cmp_sr_s_indr_y:
-			break;
-
-			case _cmp_dp_x:
-				snCMP_dpX(cpuIndex);
-			break;
-
-			case _cmp_dp_indr_l_y:
-			break;
-
-			case _cmp_addr_y:
-				snCMP_addrY(cpuIndex);
-			break;
-			case _cmp_addr_x:
-				snCMP_addrX(cpuIndex);
-			break;
-			case _cmp_l_x:
-				snCMP_longX(cpuIndex, rom_Ptr);
-			break;
-
-			case _dec_a:
-				snDEC_Acc(cpuIndex);
-			break;
-
-			case _dec_dp:
-				snDEC_dp(cpuIndex);
-			break;
-
-			case _dec_addr:
-				snDEC_addr(cpuIndex);
-			break;
-
-			case _dec_addr_x:
-				snDEC_addrX(cpuIndex);
-			break;
-
-			case _dec_dp_x:
-				snDEC_dpX(cpuIndex);
-			break;
-
 			case _dex:
-				snDEX(cpuIndex);
+				sn_OpDEX(cpuIndex);
 			break;
-
 			case _dey:
-				snDEY(cpuIndex);
+				sn_OpDEY(cpuIndex);
 			break;
-
-			case _lda_dp:
-				snLDA_dp(cpuIndex);
-			break;
-			
-			case _lda_const:
-				snLDA_const(cpuIndex);
-			break;
-
-			case _lda_addr:
-				snLDA_addr(cpuIndex);
-			break;
-			
-			case _lda_l:
-				snLDA_long(cpuIndex, rom_Ptr);
-			break;
-
-			case _lda_dp_x:
-				snLDA_dpX(cpuIndex);
-			break;
-
-			case _lda_addr_y:
-				snLDA_addrY(cpuIndex);
-			break;
-
-			case _lda_addr_x:
-				snLDA_addrX(cpuIndex);
-			break;
-			
-			case _lda_l_x:
-				snLDA_longX(cpuIndex, rom_Ptr);
-			break;
-
-			case _ldx_const:
-				snLDX_const(cpuIndex);
-			break;
-
-			case _ldx_dp:
-				snLDX_dp(cpuIndex);
-			break;
-
-			case _ldx_addr:
-				snLDX_addr(cpuIndex);
-			break;
-
-			case _ldx_dp_y:
-				snLDX_dpY(cpuIndex);
-			break;
-
-			case _ldx_addr_y:
-				snLDX_addrY(cpuIndex);
-			break;
-
 			case _inc_a:
-				snINC_Acc(cpuIndex);
+                sn_OpINA(cpuIndex);
 			break;
-
-			case _jmp_addr:
-				snJMP_addr(cpuIndex);
+			case _inc_dp:
+                sn_OpINC_dp(cpuIndex);
+            break;
+            case _inc_addr:
+                sn_OpINC_addr(cpuIndex);
+            break;
+            case _inc_dp_x:
+                sn_OpINC_dpX(cpuIndex);
+            break;
+            case _inc_addr_x:
+                sn_OpINC_addrX(cpuIndex);
+            break;
+            case _jmp_addr:
+			    sn_OpJMP_addr(cpuIndex);
 			break;
-
-			case _jmp_l:
-				snJMP_long(cpuIndex, rom_Ptr);
+			case _lda_const:
+				sn_OpLDA_const(cpuIndex);
 			break;
-
-			case _jsr_addr:
-				snJSR_addr(cpuIndex);
+			case _ldx_const:
+				sn_OpLDX_const(cpuIndex);
 			break;
-
-			case _jsr_l:
-				snJSR_long(cpuIndex, rom_Ptr);
-			break;
-
-			case _jsr_addr_x_indr:
-				snJSR_addrXI(cpuIndex);
-			break;
-
-			case _ora_const:
-				snORA_const(cpuIndex);
-			break;
-
-			case _ora_addr:
-				snORA_addr(cpuIndex);
-			break;
-
-			case _ora_l:
-				snORA_long(cpuIndex, rom_Ptr);
-			break;
-
-			case _ora_l_x:
-				snORA_longX(cpuIndex, rom_Ptr);
-			break;
-
-			case _ora_addr_y:
-				snORA_addrY(cpuIndex);
-			break;
-			
-			case _ora_addr_x:
-				snORA_addrX(cpuIndex);
-			break;
-
-			case _rep:
-				snREP_const(cpuIndex);
-			break;
-
 			case _sec:
-				snSEC(cpuIndex);
+				sn_OpSEC(cpuIndex);
 			break;
-
 			case _sed:
-				snSED(cpuIndex);
+				sn_OpSED(cpuIndex);
 			break;
-
 			case _sei:
-				snSEI(cpuIndex);
+				sn_OpSEI(cpuIndex);
 			break;
-
+			case _rep:
+				sn_OpREP(cpuIndex);
+			break;
 			case _sep:
-				snSEP(cpuIndex);
+				sn_OpSEP(cpuIndex);
 			break;
-
-			case _sta_dp:
-				snSTA_dp(cpuIndex);
-			break;
-
 			case _sta_addr:
-				snSTA_addr(cpuIndex);
+				sn_OpSTA_addr(cpuIndex);
 			break;
-
 			case _sta_l:
-				snSTA_long(cpuIndex, rom_Ptr);
+                sn_OpSTA_long(cpuIndex);
 			break;
-
-			case _sty_addr:
-				snSTY_addr(cpuIndex);
+			case _sta_l_x:
+				sn_OpSTA_longX(cpuIndex);
 			break;
-
-			case _sty_dp:
-				snSTY_dp(cpuIndex);
-			break;
-
-			case _sty_dp_x:
-				snSTY_dpX(cpuIndex);
-			break;
-
 			case _stz_dp:
-				snSTZ_dp(cpuIndex);
+				sn_OpSTZ_dp(cpuIndex);
 			break;
-
 			case _stz_dp_x:
-				snSTZ_dpX(cpuIndex);
+			    sn_OpSTZ_dpX(cpuIndex);
 			break;
-
 			case _stz_addr:
-				snSTZ_addr(cpuIndex);
+			    sn_OpSTZ_addr(cpuIndex);
 			break;
-
 			case _stz_addr_x:
-				snSTZ_addrX(cpuIndex);
+			    sn_OpSTZ_addrX(cpuIndex);
 			break;
-
 			case _tax:
-				snTAX(cpuIndex);
+				sn_OpTAX(cpuIndex);
 			break;
-			
 			case _tay:
-				snTAY(cpuIndex);
+				sn_OpTAY(cpuIndex);
 			break;
-
 			case _tcd:
-				snTCD(cpuIndex);
+			    sn_OpTCD(cpuIndex);
 			break;
-
-			case _tdc:
-				snTDC(cpuIndex);
-			break;
-
-			case _txa:
-				snTXA(cpuIndex);
-			break;
-	
 			case _txy:
-				snTXY(cpuIndex);
+				sn_OpTXY(cpuIndex);
 			break;
-
 			case _tya:
-				snTYA(cpuIndex);
+				sn_OpTYA(cpuIndex);
 			break;
-
 			case _tyx:
-				snTYX(cpuIndex);
-			break;
-
-			case _wai:
-				snWAI(cpuIndex);
+				sn_OpTYX(cpuIndex);
 			break;
 			case _xce:
-				snXCE(cpuIndex);
+				sn_OpXCE(cpuIndex);
 			break;
 			default:
+				printf("Unknown opcode %X \n",*(cpuIndex->sn_PC));
 		};
 
-		printf("PC: $%04X\n", memory_vMap[cpuIndex->sn_PC]);
-		printf("DP: $%04X\n", cpuIndex->sn_DP);
-		printf("A:  %X\n", cpuIndex->sn_Acc);
-		printf("X:  %X\n", cpuIndex->sn_X);
-		printf("Y:  %X\n", cpuIndex->sn_Y);
-		printf("C:  %d\n", cpuIndex->sn_CFlag);
-		printf("D:  %d\n", cpuIndex->sn_DFlag);
-		printf("V:  %d\n", cpuIndex->sn_VFlag);
-		printf("M:  %d\n", cpuIndex->sn_MFlag);
-		printf("E:  %d\n", cpuIndex->sn_EFlag);
-		printf("I:  %d\n", cpuIndex->sn_IFlag);
-		memory_vMap[++cpuIndex->sn_PC];
-		usleep(100000);
-
+		++cpuIndex->sn_PC;
+		//usleep(100000);
 	}
 	return;
 }

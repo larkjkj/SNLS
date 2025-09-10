@@ -2,16 +2,19 @@
 #define __CPU_VARS__
 #include "types.h"
 
+/*ですただ */
 typedef struct {
-	u32		sn_PC;
-	u32		sn_subPC;	/* Subroutine */
+	u8*		sn_PC;
+	u32		sn_BC;
+	u32*	sn_subPC;	/* Subroutine */
 
 	u16		sn_S;
 	u16		sn_Acc;
 	u16		sn_X;
 	u16		sn_Y;
 	u16		sn_DP;
-	u16		sn_PB;
+	u8		sn_DBR;
+	u8		sn_PB;
 	u16		sn_P;
 
 	u8		sn_Flags;

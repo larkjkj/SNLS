@@ -127,7 +127,7 @@ typedef enum {
 	// COP INS
 	_cop		= 0x02, 
 
-	_dec_a		= 0x3A,
+	_dea		= 0x3A,
 	_dec_dp		= 0xC6,
 	_dec_addr	= 0xCE,
 	_dec_dp_x	= 0xD6,

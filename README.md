@@ -2,18 +2,21 @@
 > This is a WIP of an emulator, i expect to finish this
 in some months, but let's see.
 
-# 16larks
+# SNLS
 ![AWESOME LOGO](logo/16larks.png)
 
 A 16-bit emulator (SNES)
+__**エムぁ取る！！!**＿＿
 
-## What we've got so far? 
+## What we've got so far?
 - [ ]  Dynarec
+- [ ]  Banks (loROM and hiROM)
 - [x]  ~memory duh~
 - [ ]  Memory Mapping
+- [x]  Functional BUS
 - [ ]  DMA
 
-__**Btw DMA and Memory Mapping are 
+__**Btw DMA and Memory Mapping are
 related so... they're both being
 made in parallel**__
 
@@ -36,18 +39,17 @@ there's more
 ## Roms being tested
 - *Super Mario RPG* ![](https://progress-bar.xyz/05/)
   - (The game is executed but CPU is halted after some time)
-   
+
 - *Super Mario World* ![](https://progress-bar.xyz/05)
   - (The game is executed and enters in a loop)
-  
+
 - *Zelda ALTTP* ![](https://progress-bar.xyz/05)
   - (Same thing above)
-  
+
 - *Super Metroid* ![](https://progress-bar.xyz/05)
   - (Same thing above)
-  
+
 - *CPU Rom Tests* ![](https://progress-bar.xyz/00)
   - (The rom simply executes, at some time, it stops..)
 
 # idk guys, just makin it, cant take a fuckin shit anmr
-
