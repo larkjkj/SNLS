@@ -9,37 +9,37 @@
 
 sn_PPU PPU_index;
 
-extern inline int setupPPU(u8* m_Buf) {
+extern inline int setupPPU(u8** m_Buf) {
     /* I feel this is not a too-safe code */
     /* But basically they are pointers to a specific address */
 
-	PPU_index.IniDisp   = &m_Buf[0x00];
-	PPU_index.ObjSel    = &m_Buf[0x01];
-	PPU_index.OamADDL   = &m_Buf[0x02];
-	PPU_index.OamADDH  = &m_Buf[0x03];
-	PPU_index.OamData  = &m_Buf[0x04];
-	PPU_index.BgMode   = &m_Buf[0x05];
-	PPU_index.Mosaic   = &m_Buf[0x06];
-	PPU_index.Bg1SC    = &m_Buf[0x07];
-	PPU_index.Bg2SC    = &m_Buf[0x08];
-	PPU_index.Bg3SC    = &m_Buf[0x09];
-	PPU_index.Bg4SC    = &m_Buf[0x0A];
-	PPU_index.Bg12NBA  = &m_Buf[0x0B];
-	PPU_index.Bg34NBA  = &m_Buf[0x0C];
-	PPU_index.Bg1HOFS  = &m_Buf[0x0D];
-	PPU_index.Bg1VOFS  = &m_Buf[0x0E];
-	PPU_index.Bg2HOFS  = &m_Buf[0x0F];
-	PPU_index.Bg2VOFS  = &m_Buf[0x10];
-	PPU_index.Bg3HOFS  = &m_Buf[0x11];
-	PPU_index.Bg3VOFS  = &m_Buf[0x12];
-	PPU_index.Bg4HOFS  = &m_Buf[0x13];
-	PPU_index.Bg4VOFS  = &m_Buf[0x14];
-	PPU_index.vMAIN    = &m_Buf[0x15];
+	PPU_index.IniDisp   = m_Buf[0x00];
+	PPU_index.ObjSel    = m_Buf[0x01];
+	PPU_index.OamADDL   = m_Buf[0x02];
+	PPU_index.OamADDH  = m_Buf[0x03];
+	PPU_index.OamData  = m_Buf[0x04];
+	PPU_index.BgMode   = m_Buf[0x05];
+	PPU_index.Mosaic   = m_Buf[0x06];
+	PPU_index.Bg1SC    = m_Buf[0x07];
+	PPU_index.Bg2SC    = m_Buf[0x08];
+	PPU_index.Bg3SC    = m_Buf[0x09];
+	PPU_index.Bg4SC    = m_Buf[0x0A];
+	PPU_index.Bg12NBA  = m_Buf[0x0B];
+	PPU_index.Bg34NBA  = m_Buf[0x0C];
+	PPU_index.Bg1HOFS  = m_Buf[0x0D];
+	PPU_index.Bg1VOFS  = m_Buf[0x0E];
+	PPU_index.Bg2HOFS  = m_Buf[0x0F];
+	PPU_index.Bg2VOFS  = m_Buf[0x10];
+	PPU_index.Bg3HOFS  = m_Buf[0x11];
+	PPU_index.Bg3VOFS  = m_Buf[0x12];
+	PPU_index.Bg4HOFS  = m_Buf[0x13];
+	PPU_index.Bg4VOFS  = m_Buf[0x14];
+	PPU_index.vMAIN    = m_Buf[0x15];
 
-	PPU_index.vmADDL   = &m_Buf[0x16];
-	PPU_index.vmADDH   = &m_Buf[0x17];
-	PPU_index.vmDATAL   = &m_Buf[0x18];
-	PPU_index.vmDATAH   = &m_Buf[0x19];
+	PPU_index.vmADDL   = m_Buf[0x16];
+	PPU_index.vmADDH   = m_Buf[0x17];
+	PPU_index.vmDATAL   = m_Buf[0x18];
+	PPU_index.vmDATAH   = m_Buf[0x19];
 
 	/* Reserved to MODE-7 0x1A - 0x20
 

@@ -1,21 +1,22 @@
 binary		:= SNLS.ELF
 ps2		?= 0
-flags		:= 
+flags		:= -D_USESDL
 includes	:= -Iinclude -I.
-libraries	:= -limgui
+libraries	:= -L/usr/lib -lSDL2 -lSDL2main
 
 ifeq ($(ps2), 1)
 	source		+= source/ps2
 	prefix		:= mips64r5900el-ps2-elf-
 	flags		+= -D_EE
-	libraries	:= -L$(PS2SDK)/ee/lib -L$(PS2SDK)/ports/lib -ldebug -lkernel \
+	libraries	+= -L$(PS2SDK)/ee/lib -L$(PS2SDK)/ports/lib -ldebug -lkernel \
 			   -lps2_drivers
 	includes	+= -I$(PS2SDK)/ee/include -I$(PS2SDK)/common/include \
 			   -I$(PS2SDK)/ports/include
 	linkfile	:= -T$(PS2SDK)/ee/startup/linkfile
 else
 	prefix		:=
-	libraries	:= -lc
+	libraries	+= -lc
+	includes    += -I/usr/include/
 endif
 
 compiler	:= $(prefix)gcc

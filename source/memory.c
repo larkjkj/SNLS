@@ -33,12 +33,11 @@ extern void splitBanks(rom *rom_Ptr) {
     m_Buf[rom_Ptr->banks];
 
     for(unsigned int i = 0; i <= rom_Ptr->banks; i ++) {
-	*m_Buf[i].mMap = malloc(sizeof(u8*));
-	m_Buf[i].mMap = malloc(0x10000);
-        fread(&(m_Buf[i].mMap[0x8000]), sizeof(u8), 0x8000, rom_File);
-	printf("%X \n", (m_Buf[i].mMap[0x8000]));
-        mBank[i] = m_Buf[i].mMap;
-    	setupPPU(m_Buf[i].mMap[0x2000]);
+        m_Buf[i].mMap = malloc(0x10000);
+        fread((&m_Buf[i].mMap[0x8000]), sizeof(u8), 0x8000, rom_File);
+        printf("%X \n", (m_Buf[i].mMap[0x8000]));
+        mBank[i] = &m_Buf[i].mMap;
+    	setupPPU(&m_Buf[i].mMap[0x2100]);
     }
     // SETUP PPU
 

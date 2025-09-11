@@ -23,9 +23,6 @@ char path_buf[255];
 
 int main() {
 	//init_scr();
-	#ifdef _EE
-	#endif
-
 	/* Just a check to make sure we're on the correct path */
 	getcwd(path_buf, sizeof(path_buf));
 	sn_CPU* mainCPU = malloc(sizeof(sn_CPU));
@@ -49,6 +46,8 @@ int main() {
 		//free(m_Buf->mMap);
 		//free(m_Buf->mROM);
 	free(mainCPU);
+	free(m_Buf);
+	free(mBank);
 
 	return 0;
 }

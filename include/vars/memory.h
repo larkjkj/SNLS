@@ -9,12 +9,16 @@ extern u32 reset_snV;
 extern u16 holdLoAddr;
 extern u16 holdHiAddr;
 
+typedef enum reg_MEnum {
+    PPU     = 0x2100,
+} reg_MEnum;
+
 typedef struct reg_Mem {
     u8*     PPU_reg;
 } reg_Mem;
 
 typedef struct map_Buf {
-    u8**    mMap;
+    u8*    mMap;
 } map_Buf;
 
 extern u8** mBank[0xFF];

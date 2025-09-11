@@ -1,5 +1,6 @@
 #ifndef __PPUF__
 #define __PPUF__
+
 #include "vars/memory.h"
 #include "vars/ppu.h"
 

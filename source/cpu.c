@@ -3,6 +3,7 @@
 #include <unistd.h>
 
 #include "memory_funcs.h"
+#include "gs_funcs.h"
 #include "bus_funcs.h"
 #include "ppu_funcs.h"
 
@@ -30,7 +31,7 @@ void rcCPU(sn_CPU* cpuIndex, rom* rom_Ptr) {
 	//cpuIndex->sn_PC = (memory_Bank[cpuIndex->sn_PB] + 0x203);
 	//cpuIndex->sn_PC = (memory_Bank[cpuIndex->sn_PB] + (rom_Ptr->resetV));
 	//cpuIndex->sn_PC = *(mBank[cpuIndex->sn_PB] + rom_Ptr->resetV);
-	cpuIndex->sn_PC = m_Buf[0x0].mMap[0x8000];
+	cpuIndex->sn_PC = &m_Buf[0x0].mMap[0x8000];
 	if (cpuIndex->sn_PC == NULL) {
 	    printf("Error, PC is null, something gone wrong with mapping? \n");
 		exit(1);
@@ -40,13 +41,14 @@ void rcCPU(sn_CPU* cpuIndex, rom* rom_Ptr) {
 
 	//printf("%X \n", *(sn_Mread_u16(cpuIndex)+15));
 	while (1) {
+ renderGS();
 		printf("PC: $%02X DP: %04X A: %04X X: %X\n",*cpuIndex->sn_PC, cpuIndex->sn_DP, cpuIndex->sn_Acc, cpuIndex->sn_X);
 		printf("E: %d N: %d V: %d M: %d X: %d D: %d I: %d Z: %d C: %d \n", \
 			cpuIndex->sn_EFlag, cpuIndex->sn_NFlag, cpuIndex->sn_VFlag, cpuIndex->sn_MFlag, cpuIndex->sn_XFlag, cpuIndex->sn_DFlag, cpuIndex->sn_IFlag, cpuIndex->sn_ZFlag, cpuIndex->sn_CFlag);
 
 		//printf("%X \n", emuMemory.memory_rPPU[0x2140]);
 		switch (*(cpuIndex->sn_PC)) {
-			case _bmi:
+/*			case _bmi:
 				sn_OpBMI(cpuIndex);
 			break;
 			case _bpl:
@@ -55,6 +57,7 @@ void rcCPU(sn_CPU* cpuIndex, rom* rom_Ptr) {
 			case _bra:
 			    sn_OpBRA(cpuIndex);
 			break;
+			*/
 			case _clc:
 				sn_OpCLC(cpuIndex);
 			break;
@@ -162,7 +165,10 @@ void rcCPU(sn_CPU* cpuIndex, rom* rom_Ptr) {
 		};
 
 		++cpuIndex->sn_PC;
-		//usleep(100000);
+		printf("%X %X %X\n", m_Buf[0].mMap[0x2100], \
+		                    m_Buf[0].mMap[0x2105], \
+	                     m_Buf[0].mMap[0x2117]);
+		usleep(100000);
 	}
 	return;
 }
