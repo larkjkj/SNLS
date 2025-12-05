@@ -55,6 +55,22 @@ extern u8 returnBank(size_t byteSize) {
 */
 //	return printf("%X", decNumb);
 
+static void splitBanks(rom *rom_Ptr) {
+
+	for(unsigned int i = 0; i <= rom_Ptr->banks; i ++) {
+	str_Buffer mapROM[i];
+	mapROM[i].buffer = malloc(0x10000);
+	fread(&mapROM[i].buffer[0x8000], sizeof(u8), 0x8000, rom_File);
+	mBank[i] = &mapROM[i].buffer;
+	printf("%X \n", mapROM[i].buffer[0x8000]);
+    	//setupPPU(mBank[i][0x2100]);
+    }
+    // SETUP PPU
+
+    //fwrite((void*) buffer, unsigned long, sizeof(u8), FILE *)
+    printf("Done \n");
+    return;
+}
 
 /* Remember to replace variable calls with struct members */
 int splitROM(rom* rom_Ptr) {
@@ -153,6 +169,5 @@ void openRom(char* rom_name, rom* rom_Ptr) {
 	};
 
 	fclose(rom_File);
-
 	return;
 };

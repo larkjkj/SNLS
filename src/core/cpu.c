@@ -31,12 +31,13 @@ void rcCPU(sn_CPU* cpuIndex, rom* rom_Ptr) {
 	//cpuIndex->sn_PC = (memory_Bank[cpuIndex->sn_PB] + 0x203);
 	//cpuIndex->sn_PC = (memory_Bank[cpuIndex->sn_PB] + (rom_Ptr->resetV));
 	//cpuIndex->sn_PC = *(mBank[cpuIndex->sn_PB] + rom_Ptr->resetV);
-	cpuIndex->sn_PC = &m_Buf[0x0].mMap[0x8000];
+	cpuIndex->sn_PC = mBank[0x0][0x8000];
 	if (cpuIndex->sn_PC == NULL) {
 	    printf("Error, PC is null, something gone wrong with mapping? \n");
 		exit(1);
+	} else {
+		printf("CPU started with %X \n", *cpuIndex->sn_PC);
 	}
-	printf("CPU started with %X \n", *cpuIndex->sn_PC);
 
 
 	//printf("%X \n", *(sn_Mread_u16(cpuIndex)+15));
@@ -165,9 +166,9 @@ void rcCPU(sn_CPU* cpuIndex, rom* rom_Ptr) {
 		};
 
 		++cpuIndex->sn_PC;
-		printf("%X %X %X\n", m_Buf[0].mMap[0x2100], \
-		                    m_Buf[0].mMap[0x2105], \
-	                     m_Buf[0].mMap[0x2117]);
+		printf("%X %X %X\n", mBank[0][0x2100], \
+		                    mBank[0][0x2105], \
+	                     mBank[0][0x2117]);
 		usleep(100000);
 	}
 	return;

@@ -26,15 +26,14 @@ int main() {
 	/* Just a check to make sure we're on the correct path */
 	getcwd(path_buf, sizeof(path_buf));
 	sn_CPU* mainCPU = malloc(sizeof(sn_CPU));
-
 	rom rom_Ptr;
 
+	/* Yea, i know this is bad
+	 * but this is used until
+	 * i make a file explorer */
 	openRom("roms/mariow.sfc", &rom_Ptr);
-	/* This only works on PS2 btw, since it directly
-	change Memory/GS virtual memory */
-	gsInit();
-
 	printf("path_buf: %s \n", path_buf);
+	
 	printf("CPU PB: %X \nROM size: %u\nROM reset: %X\nROM offset: %u\nROM header: %X\n", \
 	mainCPU->sn_PB, rom_Ptr.size, rom_Ptr.resetV, rom_Ptr.offset, rom_Ptr.type);
 	rcCPU(mainCPU, &rom_Ptr);
@@ -46,7 +45,6 @@ int main() {
 		//free(m_Buf->mMap);
 		//free(m_Buf->mROM);
 	free(mainCPU);
-	free(m_Buf);
 	free(mBank);
 
 	return 0;

@@ -6,4 +6,3 @@
 
 extern void setupBanks(rom* rom_Ptr);
 extern void setupMemory(rom* rom_Ptr);
-extern void splitBanks(rom* rom_Ptr);

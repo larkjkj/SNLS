@@ -17,12 +17,10 @@ typedef struct reg_Mem {
     u8*     PPU_reg;
 } reg_Mem;
 
-typedef struct map_Buf {
-    u8*    mMap;
-} map_Buf;
+typedef struct str_Buffer {
+	u8* buffer;
+} str_Buffer;
 
 extern u8** mBank[0xFF];
-
-extern map_Buf m_Buf[];
 
 #endif

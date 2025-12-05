@@ -5,7 +5,7 @@ includes	:= -Iinclude -I.
 libraries	:= -L/usr/lib -lSDL2 -lSDL2main
 
 ifeq ($(ps2), 1)
-	source		+= source/ps2
+	source		+= src/platform/ps2
 	prefix		:= mips64r5900el-ps2-elf-
 	flags		+= -D_EE
 	libraries	+= -L$(PS2SDK)/ee/lib -L$(PS2SDK)/ports/lib -ldebug -lkernel \
@@ -22,7 +22,11 @@ endif
 compiler	:= $(prefix)gcc
 compiler_g++	:= $(prefix)g++
 
-source		:= source
+source		:= src \
+		   src/core \
+		   src/platform/cross \
+		   src/emulator \
+		   src/platform/pc
 
 c_source 	:= $(foreach c_src, $(source), $(wildcard $(c_src)/*.c))
 cpp_source	:= $(foreach cpp_src, $(source), $(wildcard $(cpp_src)/*.cpp))
