@@ -9,12 +9,12 @@
 
 extern inline u8* sn_Mwrite_u8(sn_CPU* cpuIndex, u16 offset, u8* address, u32 value) {
     printf("Storing <%X> to [%X] [%X]\n", value, cpuIndex->sn_DP, *address);
-    *(*mBank[cpuIndex->sn_DP]+ *address) = value;
+    *(mBank[cpuIndex->sn_DP]+ *address) = value;
 };
 
 extern inline u8* sn_Mwrite_u16(sn_CPU* cpuIndex, u16 offset, u16* address, u32 value) {
     printf("Storing <%X> to [%X] [%X]\n", value, cpuIndex->sn_DP, *address);
-    *(*mBank[cpuIndex->sn_DP] + *address) = value;
+    *(mBank[cpuIndex->sn_DP] + *address) = value;
 };
 
 extern inline u8* sn_Mread_u8(sn_CPU* cpuIndex, u16 offset) {

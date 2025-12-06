@@ -4,6 +4,6 @@
 #include "vars/memory.h"
 #include "vars/ppu.h"
 
-extern int setupPPU(u8* memory_rPPU);
-extern void testPPU(sn_PPU* PPU_index);
+extern struct sn_PPU* setupPPU(sn_PPU* initializedPPU, str_Buffer* map_Buf);
+extern void fetchPPU(struct sn_PPU* PPU_index);
 #endif

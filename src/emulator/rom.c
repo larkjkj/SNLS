@@ -10,6 +10,7 @@
 #include "vars/rom.h"
 #include "vars/cpu.h"
 #include "vars/memory.h"
+#include "tools_funcs.h"
 
 #ifdef _EE
 #include <debug.h>
@@ -17,69 +18,23 @@
 
 FILE* rom_File = NULL;
 
-static u32 address_romTypes[3] = {
-	0x7FD5,
-	0xFFD5,
-};
-
-static u8 valid_romTypes[7] = {
-	0x20, 0x21, 0x23, 0x30, 0x31, 0x32, 0x35
-};
-
-extern u16 convertBEtoLE16(u16 address) {
-	unsigned x = ((u8) (address));
-	unsigned y = ((u8) (address >> 8));
-	return (y << 8 | x);
-}
-
-extern u8 returnBank(size_t byteSize) {
-	u8 x = ((byteSize)) / 32768;
-	return x;
-}
-
-
-//extern char decimalToHEX(int decNumb) {
-/*	char recNumb;
-	char hexMap[6] = {
-		'A', 'B', 'C', 'D', 'E', 'F'
-	};
-
-	while (decNumb | 16 == 1) {
-		decNumb /= 16;
-		recNumb = ((decNumb % 16) << 8);
-
-		//u8 recNumb = (decNumb %= 16);
-
-		printf("%i => %c\n", decNumb, recNumb);
-	}
-*/
-//	return printf("%X", decNumb);
-
-static void splitBanks(rom *rom_Ptr) {
-
-	for(unsigned int i = 0; i <= rom_Ptr->banks; i ++) {
-	str_Buffer mapROM[i];
-	mapROM[i].buffer = malloc(0x10000);
-	fread(&mapROM[i].buffer[0x8000], sizeof(u8), 0x8000, rom_File);
-	mBank[i] = &mapROM[i].buffer;
-	printf("%X \n", mapROM[i].buffer[0x8000]);
-    	//setupPPU(mBank[i][0x2100]);
-    }
-    // SETUP PPU
-
-    //fwrite((void*) buffer, unsigned long, sizeof(u8), FILE *)
-    printf("Done \n");
-    return;
-}
-
 /* Remember to replace variable calls with struct members */
 int splitROM(rom* rom_Ptr) {
+	/* Warning, this code is not implemented at all
+	 * since it only get up to 16-bit addresses */
+
 	fseek(rom_File, rom_Ptr->offset, SEEK_SET);
+	/* This will probally not be used in the
+	 * final product */
+
+	/* This was used to distinguishe 
+	 * loROM and hiROM, making loROM 
+	 * buffer half the size 
 	if (rom_Ptr->type & 0x01) {
 		rom_Ptr->banksize = 0x8000;
 	} else if (rom_Ptr->type & 0x00) {
 		rom_Ptr->banksize = 0x10000;
-	}
+	} */
 
 	switch (rom_Ptr->type) {
 		case 0x20:

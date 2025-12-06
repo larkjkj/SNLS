@@ -3,7 +3,7 @@
 #include "types.h"
 
 /*ですただ */
-typedef struct {
+typedef struct sn_CPU {
 	u8*		sn_PC;
 	u32		sn_BC;
 	u32*	sn_subPC;	/* Subroutine */

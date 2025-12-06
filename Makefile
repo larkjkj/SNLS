@@ -26,6 +26,7 @@ source		:= src \
 		   src/core \
 		   src/platform/cross \
 		   src/emulator \
+		   src/tools \
 		   src/platform/pc
 
 c_source 	:= $(foreach c_src, $(source), $(wildcard $(c_src)/*.c))

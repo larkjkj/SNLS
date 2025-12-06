@@ -22,21 +22,23 @@
 char path_buf[255];
 
 int main() {
+	rom rom_Ptr;
+
+	initSDL();
 	//init_scr();
 	/* Just a check to make sure we're on the correct path */
 	getcwd(path_buf, sizeof(path_buf));
-	sn_CPU* mainCPU = malloc(sizeof(sn_CPU));
-	rom rom_Ptr;
 
 	/* Yea, i know this is bad
 	 * but this is used until
 	 * i make a file explorer */
 	openRom("roms/mariow.sfc", &rom_Ptr);
-	printf("path_buf: %s \n", path_buf);
+	struct sn_CPU* mainCPU = initCPU(&rom_Ptr);
 	
-	printf("CPU PB: %X \nROM size: %u\nROM reset: %X\nROM offset: %u\nROM header: %X\n", \
-	mainCPU->sn_PB, rom_Ptr.size, rom_Ptr.resetV, rom_Ptr.offset, rom_Ptr.type);
-	rcCPU(mainCPU, &rom_Ptr);
+	while (1) {
+		renderGS();
+		fetchCPU(mainCPU);
+	}
 	/* Yea i know this is bad
 	 * but i was kidna lazy to implement
 		* a better fix like a double pointer

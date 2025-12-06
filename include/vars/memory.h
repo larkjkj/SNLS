@@ -21,6 +21,6 @@ typedef struct str_Buffer {
 	u8* buffer;
 } str_Buffer;
 
-extern u8** mBank[0xFF];
+extern u8* mBank[0xFF];
 
 #endif
