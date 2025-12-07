@@ -24,7 +24,7 @@ char path_buf[255];
 int main() {
 	rom rom_Ptr;
 
-	initSDL();
+	initGS();
 	//init_scr();
 	/* Just a check to make sure we're on the correct path */
 	getcwd(path_buf, sizeof(path_buf));
@@ -33,7 +33,7 @@ int main() {
 	 * but this is used until
 	 * i make a file explorer */
 	openRom("roms/mariow.sfc", &rom_Ptr);
-	struct sn_CPU* mainCPU = initCPU(&rom_Ptr);
+	sn_CPU* mainCPU = initCPU(&rom_Ptr);
 	
 	while (1) {
 		renderGS();

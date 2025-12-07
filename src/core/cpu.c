@@ -156,6 +156,6 @@ extern void fetchCPU(sn_CPU* cpuIndex) {
 
 		break;
 	}
-		usleep(1000000);
+		//usleep(1000000);
 	++cpuIndex->sn_PC;
 }

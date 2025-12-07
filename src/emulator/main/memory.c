@@ -43,7 +43,7 @@ extern void splitBanks(rom *rom_Ptr) {
 		new_PPU = setupPPU(new_PPU, mapROM[i]); 
 		mBank[i] = mapROM[i]->buffer;
 		fetchPPU(new_PPU);
-
+		free(mapROM[i]);
 		printf("%X \n", mBank[i][0x8000]);
 	}
 	// This one acts like rom mirroring

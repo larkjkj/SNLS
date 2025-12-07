@@ -10,16 +10,13 @@
 #include "SDL2/SDL_video.h"
 
 #ifdef _USESDL
-void gsInit() {
-    Surface = malloc(sizeof(SDL_Surface));
-    Window = SDL_CreateWindow("SNLS", 0, 0, 640, 480, 0);
-    Renderer = SDL_CreateRenderer(Window, 0, 0);
-
+extern void gsInit() {
     return;
+
 };
 #else
 
-void gsInit() {
+extern void gsInit() {
     sleep(5);
 /* 	gs_disp_address = 0x80000001;
 	int vku = 4; // Using a fix value because i'm too lazy,

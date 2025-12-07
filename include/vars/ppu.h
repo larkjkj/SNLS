@@ -90,11 +90,18 @@
 #define STAT77 0x3E
 #define STAT78 0x3F
 
+typedef struct g_Tile {
+	u8	top;
+	u8	bottom;
+	u8	left;
+	u8	right;
+} g_Tile;
+
 typedef struct sn_PPU {
 	u8             p_Buf[0x2A];
-	u8             p_vRAM[65536];
-	 u8*	IniDisp;
-	 u8*	ObjSel;
+	u8	p_vRAM[65536];
+	u8*	IniDisp;
+	u8*	ObjSel;
 
 	/* These two are basically the same thing
 	 * but splitted in two, L -> Low, H -> High
@@ -126,20 +133,11 @@ typedef struct sn_PPU {
 	 u8*    Bg4VOFS;
 	 u8*    vMAIN;
 
-	 u8*    vmADDL;
-	 u8*    vmADDH;
-	 u8*    vmDATAL;
-	 u8*    vmDATAH;
-
-	 u8*    ApuIO0;
-	 u8*    ApuIO1;
-	 u8*    ApuIO2;
-	 u8*    ApuIO3;
-
-	 u8*    WmDATA;
-	 u8*    WmADDL;
-	 u8*    WmADDH;
-	 u8*    WmADDM;
+	 u8*    vMADDL;
+	 u8*    vMADDH;
+	
+	 u8*    vMDATAL;
+	 u8*    vMDATAH;
 } sn_PPU;
 
 typedef struct p_Tile {
