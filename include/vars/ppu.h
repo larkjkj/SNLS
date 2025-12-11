@@ -90,15 +90,15 @@
 #define STAT77 0x3E
 #define STAT78 0x3F
 
-typedef struct g_Tile {
+typedef struct p_Tile {
 	u8	top;
 	u8	bottom;
 	u8	left;
 	u8	right;
-} g_Tile;
+} p_Tile;
 
 typedef struct sn_PPU {
-	u8             p_Buf[0x2A];
+	u8	p_Buf[0x2A];
 	u8	p_vRAM[65536];
 	u8*	IniDisp;
 	u8*	ObjSel;
@@ -140,9 +140,6 @@ typedef struct sn_PPU {
 	 u8*    vMDATAH;
 } sn_PPU;
 
-typedef struct p_Tile {
-    u8          type;
-} p_Tile;
 
 /*
 	nothing to see here

@@ -5,12 +5,13 @@
 #include "types.h"
 #include "rom_funcs.h"
 #include "ppu_funcs.h"
+#include "dma_funcs.h"
 
+#include "vars/dma.h"
 #include "vars/rom.h"
 #include "vars/memory.h"
 #include "vars/ppu.h"
 
-u8 mapP = 0x00;
 u8* mBank[0xFF];
 
 /*u8* memory_vMap = NULL;
@@ -23,30 +24,31 @@ u16 holdAddr;
 u16 holdLoAddr;
 u16 holdHiAddr;
 
-extern void splitBanks(rom *rom_Ptr) {
-	fseek(rom_File, rom_Ptr->offset, SEEK_SET);
-	sn_PPU* new_PPU = malloc(sizeof(sn_PPU));
+/* TODO: Make a new function unifying PPU, APU
+ * DMA, and buffer setup, something like this
+ * setupSystem(sn_PPU, mainDMA, ...) so we can
+ * stop using #include all the time for 2 functions
+ * only */
 
-	for(unsigned int i = 0; i <= rom_Ptr->banks; i ++) {
-		/* Makes 
-		 * ROM -> Buffer 
-		 * PPU -> Buffer 
-		 * ... -> Buffer 
-		 * Buffer -> Bank[x]*/
-
-		str_Buffer* mapROM[i];
-		mapROM[i] = malloc(sizeof(u8*));
-		mapROM[i]->buffer = malloc(0x10000);
-		fread(&mapROM[i]->buffer[0x8000], sizeof(u8), 0x8000, rom_File);
-
-		/* Overrides our PPU pointer with a fully-mapped to buffer PPU */
-		new_PPU = setupPPU(new_PPU, mapROM[i]); 
-		mBank[i] = mapROM[i]->buffer;
-		fetchPPU(new_PPU);
-		free(mapROM[i]);
-		printf("%X \n", mBank[i][0x8000]);
-	}
-	// This one acts like rom mirroring
-	printf("Done \n");
+extern void attachROM(u8* buffer, rom* rom_Ptr) {
+	fread(buffer, sizeof(u8), 0x8000, rom_File);
+	printf("%X \n", *buffer);
 	return;
 }
+
+extern void setupSystem(u8* buffer, sn_PPU* ppu, sn_DMA* dma) {
+	/*for(unsigned int i = 0; i < 0xFF; i ++) {
+		mBank[i] = malloc(sizeof(u8));
+	};
+	
+	for(unsigned int i = 0; i < rom_Ptr->banks; i ++) {
+		mMemory_ptr[i] = malloc(sizeof(u8));
+		mMemory_ptr[i]->buffer = malloc(0x10000);
+		//attachROM(mMemory_ptr[i]->buffer, rom_Ptr);
+		mapPPU(ePPU, mMemory_ptr[i]->buffer);
+		
+		mBank[i] = *mMemory_ptr[i]->buffer;
+	}*/
+};
+
+

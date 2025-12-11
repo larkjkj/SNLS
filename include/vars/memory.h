@@ -9,17 +9,18 @@ extern u32 reset_snV;
 extern u16 holdLoAddr;
 extern u16 holdHiAddr;
 
-typedef enum reg_MEnum {
-    PPU     = 0x2100,
-} reg_MEnum;
+typedef struct mMemory {
+	u8*	rom;
+	u8*	ppu_map[0x3F];
+	u8*	dma_map[0x00];
 
-typedef struct reg_Mem {
-    u8*     PPU_reg;
-} reg_Mem;
+	/* i'm hella mind confusing about using
+	 * . normal pointer
+	 * . double pointer
+	 * . array of pointers */
 
-typedef struct str_Buffer {
-	u8* buffer;
-} str_Buffer;
+	u8*	map[0x10000];
+} mMemory;
 
 extern u8* mBank[0xFF];
 

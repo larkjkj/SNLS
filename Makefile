@@ -1,20 +1,23 @@
 binary		:= SNLS.ELF
 ps2		:= 0 
-flags		:= -D_USESDL
+flags		:= -g -DDEBUG=0
 includes	:= -Iinclude -I.
-libraries	:= -L/usr/lib -lfreetype
+libraries	:= -lSDL2 -lfreetype
 
 ifeq ($(ps2), 1)
 	source		+= src/platform/ps2
 	prefix		:= mips64r5900el-ps2-elf-
 	flags		+= -D_EE
-	libraries	:= -L$(PS2SDK)/ee/lib -L$(PS2SDK)/ports/lib -ldebug -lkernel \
-			   -lps2_drivers
+	libraries	+= -L$(PS2SDK)/ee/lib -L$(PS2SDK)/ports/lib -L$(GSKIT)/lib \
+			   -ldebug -lkernel -lps2_drivers -lgskit -ldma -ldmakit \
+			   -lps2stuff -lps2gl  -lc -lm -lstdc++
+
 	includes	+= -I$(PS2SDK)/ee/include -I$(PS2SDK)/common/include \
-			   -I$(PS2SDK)/ports/include
+			   -I$(GSKIT)/include -I$(PS2SDK)/ports/include/GL \
+			   -I$(PS2SDK)/ports/include -I$(PS2SDK)/ports/include/freetype2
 	linkfile	:= -T$(PS2SDK)/ee/startup/linkfile
 else
-	libraries	+= -lc -lGL -lglfw -lGLEW
+	libraries	+= -lc -lGL
 	includes    	+= -I/usr/include/freetype2 \
 			   -I/usr/include/ -I/usr/include/GL
 	source		+= src/platform/pc
@@ -31,9 +34,10 @@ source		+= src \
 		   src/emulator/main \
 		   src/tools
 
-c_source 	:= $(foreach c_src, $(source), $(wildcard $(c_src)/*.c))
-#cpp_source	:= $(foreach cpp_src, $(source), $(wildcard $(cpp_src)/*.cpp))
-c_objects	:= $(patsubst %.c,build/%.o,$(c_source))
+c_source 	+= $(foreach c_src, $(source), $(wildcard $(c_src)/*.c))
+#c_source	+= $(foreach c_src, $(source), $(wildcard $(c_src)/*.cpp))
+c_objects	+= $(patsubst %.c,build/%.o,$(c_source))
+#c_objects	+= $(patsubst %.cpp,build/%.o,$(c_source))
 #c_objects	+= $(patsubst %.cpp,build/%.o,$(cpp_source))
 
 # not used
@@ -49,8 +53,10 @@ build/%.o: %.c
 	@echo Building $@
 	$(compiler) -c $^ -o $@ $(includes) $(flags) $(libraries)
 
-build/%.o: %.cpp
-	$(compiler_g++) -c $^ -o $@ $(includes) $(flags) $(libraries)
+#build/%.o: %.cpp
+#	@mkdir -p $(@D)
+#	@echo Building $@
+#	$(compiler_g++) -c $^ -o $@ $(includes) $(flags) $(libraries)
 
 clean:
 	rm -rf build

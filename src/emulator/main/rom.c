@@ -65,7 +65,7 @@ int splitROM(rom* rom_Ptr) {
 	}
 	fseek(rom_File, rom_Ptr->header, SEEK_SET);
 	fread(&rom_Ptr->resetV, sizeof(u16), 1, rom_File);
-	splitBanks(rom_Ptr);
+	fseek(rom_File, rom_Ptr->offset, SEEK_SET);
 //	fseek(rom_File, 0, SEEK_SET);
 	/* remanescent code */
 	//rom_Ptr->MapArea = 0x8000;
@@ -122,7 +122,5 @@ void openRom(char* rom_name, rom* rom_Ptr) {
 			splitROM(rom_Ptr);
 		}
 	};
-
-	fclose(rom_File);
 	return;
 };

@@ -4,6 +4,7 @@
 #include "vars/memory.h"
 #include "vars/ppu.h"
 
-extern struct sn_PPU* setupPPU(sn_PPU* initializedPPU, str_Buffer* map_Buf);
-extern void fetchPPU(struct sn_PPU* PPU_index);
+extern void mapPPU(sn_PPU* ppu, u8** ppu_buffer);
+extern void setupPPU(sn_PPU* ppu);
+extern void fetchPPU(sn_PPU* ppu);
 #endif

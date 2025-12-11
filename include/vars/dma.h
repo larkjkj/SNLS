@@ -1,0 +1,7 @@
+#define MDMAEN 0x420B
+#define HDMAEN 0x420C
+
+typedef struct sn_DMA {
+	u8*	MdMaen;
+	u8*	HdMaen;
+} sn_DMA;

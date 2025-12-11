@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include "vars/memory.h"
 #include "types.h"
 
-extern u16 convertBEtoLE16(u16 address) {
+extern u16 U16convertBEtoLE(u16 address) {
 	unsigned x = ((u8) (address));
 	unsigned y = ((u8) (address >> 8));
 	return (y << 8 | x);
@@ -10,6 +12,12 @@ extern u16 convertBEtoLE16(u16 address) {
 extern u8 returnBank(size_t byteSize) {
 	u8 x = ((byteSize)) / 32768;
 	return x;
+}
+
+extern void populateBuffer(u8** buffer, unsigned int count, unsigned int size) {
+	for(unsigned int j = 0; j < count; j ++) {
+		buffer[j] = malloc(sizeof(size));
+	}
 }
 
 //extern char decimalToHEX(int decNumb) {

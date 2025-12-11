@@ -5,6 +5,7 @@
 
 #include "cpu_funcs.h"
 #include "memory_funcs.h"
+#include "init_funcs.h"
 #include "gs_funcs.h"
 #include "rom_funcs.h"
 #include "ppu_funcs.h"
@@ -24,8 +25,7 @@ char path_buf[255];
 int main() {
 	rom rom_Ptr;
 
-	initGS();
-	//init_scr();
+	initWindow();
 	/* Just a check to make sure we're on the correct path */
 	getcwd(path_buf, sizeof(path_buf));
 
@@ -33,12 +33,9 @@ int main() {
 	 * but this is used until
 	 * i make a file explorer */
 	openRom("roms/mariow.sfc", &rom_Ptr);
-	sn_CPU* mainCPU = initCPU(&rom_Ptr);
 	
-	while (1) {
-		renderGS();
-		fetchCPU(mainCPU);
-	}
+	initEmu(&rom_Ptr);
+
 	/* Yea i know this is bad
 	 * but i was kidna lazy to implement
 		* a better fix like a double pointer
@@ -46,8 +43,6 @@ int main() {
 	 */
 		//free(m_Buf->mMap);
 		//free(m_Buf->mROM);
-	free(mainCPU);
-	free(mBank);
 
 	return 0;
 }
