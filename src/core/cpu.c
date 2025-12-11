@@ -23,7 +23,7 @@ extern void setupCPU(sn_CPU *cpu, rom* rom_Ptr) {
 	cpu->sn_DP = 0;
 	cpu->sn_PB = 0;
 
-	cpu->sn_PC = &mBank[cpu->sn_DP][rom_Ptr->resetV];
+	cpu->sn_PC = mBank[cpu->sn_DP][rom_Ptr->resetV];
 	printf("cpu_setup: starting at %p \n", cpu->sn_PC);
 	//cpu->sn_PC = &mBank[cpu->sn_DP][0x8000];
 }

@@ -22,6 +22,6 @@ typedef struct mMemory {
 	u8*	map[0x10000];
 } mMemory;
 
-extern u8* mBank[0xFF];
+extern u8** mBank[0xFF];
 
 #endif

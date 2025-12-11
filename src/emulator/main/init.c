@@ -38,16 +38,15 @@ extern void initEmu(rom* rom_Ptr) {
 
 	for(unsigned int i = 0; i < rom_Ptr->banks; i ++) {
 		mMemory[i].rom = malloc(0x8000);
-		attachROM(mMemory[i].rom, rom_Ptr);
-		mapPPU(ePPU, mMemory[i].map);
-
-		/* make a function for this */
-		/* these two only allocate memory for our buffers */
 		populateBuffer(mMemory[i].map, 0x10000, sizeof(u8));
-		populateBuffer(mBank, 0xFF, sizeof(u8*));
+		attachROM(mMemory[i].rom, rom_Ptr);
+		mapDMA(eDMA, mMemory[i].map);
+		mapPPU(ePPU, mMemory[i].map);
 		for(unsigned int j = 0; j < 0x8000; j ++) {
-			memcpy(mMemory[i].map[0x8000 + j], &mMemory[i].rom[j], sizeof(u8));
+			mMemory[i].map[0x8000 + j] = &mMemory[i].rom[j];
 		}
+		mBank[i] = &mMemory[i].map[0x0];
+		*mBank[i][0x2100] = 0x11;
 	};
 
 	eCPU = malloc(sizeof(sn_CPU));
@@ -57,6 +56,7 @@ extern void initEmu(rom* rom_Ptr) {
 		fetchCPU(eCPU);
 		fetchPPU(ePPU);
 		fetchDMA(eDMA);
+		usleep(10000);
 	}
 
 	for(unsigned int i = 0; i < rom_Ptr->banks; i ++)

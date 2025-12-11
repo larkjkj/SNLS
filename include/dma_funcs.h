@@ -1,5 +1,4 @@
 #include "vars/dma.h"
 
-extern void setupDMA(sn_DMA* initializedDMA, u8* buffer);
-
-extern void fetchDMA(sn_DMA* dmaMain);
+extern void mapDMA(sn_DMA* dma, u8** dma_buffer);
+extern void fetchDMA(sn_DMA* dma);

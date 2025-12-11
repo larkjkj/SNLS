@@ -9,13 +9,15 @@
 #include "vars/ppu.h"
 
 extern void setupPPU(sn_PPU* ppu) {
-	ppu->IniDisp = malloc(sizeof(u8*));
 	//ppu->ObjSel = malloc(sizeof(u8*));
 };
 
 extern void mapPPU(sn_PPU* ppu, u8** ppu_buffer) {
 	ppu_buffer[INIDISP] = ppu->IniDisp;
 	ppu_buffer[OBJSEL] = ppu->ObjSel;
+	ppu_buffer[OAMADDL] = ppu->OamADDL;
+	ppu_buffer[OAMADDH] = ppu->OamADDH;
+	ppu_buffer[BGMODE] = ppu->BgMode;
 	return;
 }
 

@@ -12,13 +12,14 @@
 #include "vars/memory.h"
 #include "vars/ppu.h"
 
-u8* mBank[0xFF];
+u8** mBank[0xFF];
 
 /*u8* memory_vMap = NULL;
 u8* memory_wRAM = NULL;
 u8* memory_sPPU = NULL;
 u8* memory_iCPU = NULL;
 u8* memory_rDMA = NULL;*/
+
 
 u16 holdAddr;
 u16 holdLoAddr;
@@ -32,7 +33,6 @@ u16 holdHiAddr;
 
 extern void attachROM(u8* buffer, rom* rom_Ptr) {
 	fread(buffer, sizeof(u8), 0x8000, rom_File);
-	printf("%X \n", *buffer);
 	return;
 }
 
