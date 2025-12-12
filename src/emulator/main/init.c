@@ -46,7 +46,6 @@ extern void initEmu(rom* rom_Ptr) {
 			mMemory[i].map[0x8000 + j] = &mMemory[i].rom[j];
 		}
 		mBank[i] = &mMemory[i].map[0x0];
-		*mBank[i][0x2100] = 0x11;
 	};
 
 	eCPU = malloc(sizeof(sn_CPU));
