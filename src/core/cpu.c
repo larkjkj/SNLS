@@ -2,17 +2,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "memory_funcs.h"
-#include "gs_funcs.h"
-#include "bus_funcs.h"
-#include "ppu_funcs.h"
+#include "core/cpu/opcodes.h"
+#include "core/cpu/interpreter.h"
+#include "core/cpu/ricoh.h"
 
-#include "cpu_opcodes.h"
-#include "interpreter.h"
-
-#include "vars/memory.h"
-#include "vars/rom.h"
-#include "vars/cpu.h"
+#include "emulator/memory.h"
+#include "emulator/rom.h"
+#include "core/bus.h"
 
 //#include "interpreter.h"
 extern void setupCPU(sn_CPU *cpu, rom* rom_Ptr) {

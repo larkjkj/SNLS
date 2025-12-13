@@ -3,17 +3,12 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "cpu_funcs.h"
-#include "memory_funcs.h"
-#include "init_funcs.h"
-#include "gs_funcs.h"
-#include "rom_funcs.h"
-#include "ppu_funcs.h"
-
-#include "vars/ppu.h"
-#include "vars/cpu.h"
-#include "vars/rom.h"
-#include "vars/memory.h"
+#include "emulator/init.h"
+#include "emulator/gs.h"
+#include "core/ppu.h"
+#include "core/cpu/ricoh.h"
+#include "emulator/rom.h"
+#include "emulator/memory.h"
 
 #ifdef _EE
 #include "debug.h"

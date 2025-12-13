@@ -2,7 +2,7 @@
 #define __OP_HEADER__
 
 #include <stdio.h>
-#include "types.h"
+#include "general/types.h"
 
 // _dp_x (DP Indexed + x) Calculate the (offset + dp + x), resulting in a adress;
 // _sr_s (Stack[S] Relative-Type) Calculate the stack[s] value but relative(signed-type)

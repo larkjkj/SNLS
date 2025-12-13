@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "vars/memory.h"
-#include "types.h"
+#include "emulator/memory.h"
+#include "general/types.h"
 
 extern u16 U16convertBEtoLE(u16 address) {
 	unsigned x = ((u8) (address));

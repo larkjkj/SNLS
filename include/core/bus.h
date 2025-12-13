@@ -1,5 +1,5 @@
-#include "vars/cpu.h"
-#include "vars/memory.h"
+#include "core/cpu/ricoh.h"
+#include "emulator/memory.h"
 
 extern u8* sn_Mread_u8(sn_CPU* cpuIndex, u16 offset);
 extern u16* sn_Mread_u16(sn_CPU* cpuIndex, u16 offset);

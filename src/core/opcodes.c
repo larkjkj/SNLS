@@ -1,8 +1,8 @@
 #include <unistd.h>
 
-#include "bus_funcs.h"
-#include "vars/memory.h"
-#include "vars/cpu.h"
+#include "emulator/memory.h"
+#include "core/cpu/ricoh.h"
+#include "core/bus.h"
 
 /* Syntax it's basically use the corresponding byte read and
  * pass the following argumetns:

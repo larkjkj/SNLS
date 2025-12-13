@@ -3,14 +3,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "types.h"
-#include "gs_addr.h"
-#include "memory_funcs.h"
+#include "general/types.h"
+#include "emulator/gs.h"
 
-#include "vars/rom.h"
-#include "vars/cpu.h"
-#include "vars/memory.h"
-#include "tools_funcs.h"
+#include "emulator/rom.h"
+#include "core/cpu/ricoh.h"
+#include "emulator/memory.h"
+#include "general/tools.h"
 
 #ifdef _EE
 #include <debug.h>

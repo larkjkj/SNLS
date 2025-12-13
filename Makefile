@@ -1,5 +1,6 @@
 binary		:= SNLS.ELF
 ps2		:= 0 
+debug		:= 0
 flags		:= -g -DDEBUG=0
 includes	:= -Iinclude -I.
 libraries	:= -lSDL2 -lfreetype
@@ -22,6 +23,11 @@ else
 			   -I/usr/include/ -I/usr/include/GL
 	source		+= src/platform/pc
 	prefix		:=
+endif
+
+ifeq  ($(debug), 1)
+	flags		+= -fsanitize=address
+	libraries	+= -lasan
 endif
 
 compiler	:= $(prefix)gcc

@@ -2,15 +2,12 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "types.h"
-#include "rom_funcs.h"
-#include "ppu_funcs.h"
-#include "dma_funcs.h"
+#include "general/types.h"
 
-#include "vars/dma.h"
-#include "vars/rom.h"
-#include "vars/memory.h"
-#include "vars/ppu.h"
+#include "core/dma.h"
+#include "emulator/rom.h"
+#include "emulator/memory.h"
+#include "core/ppu.h"
 
 u8** mBank[0xFF];
 
@@ -31,8 +28,9 @@ u16 holdHiAddr;
  * stop using #include all the time for 2 functions
  * only */
 
-extern void attachROM(u8* buffer, rom* rom_Ptr) {
-	fread(buffer, sizeof(u8), 0x8000, rom_File);
+extern void attachROM(mMemory* mMemory, rom* rom_Ptr) {
+	mMemory->rom_buffer = malloc(0x8000);
+	fread(mMemory->rom_buffer, sizeof(u8), 0x8000, rom_File);
 	return;
 }
 

@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "types.h"
-#include "vars/memory.h"
-#include "vars/cpu.h"
-#include "vars/rom.h"
+#include "general/types.h"
+#include "emulator/memory.h"
+#include "emulator/rom.h"
+#include "core/cpu/ricoh.h"
 
 extern inline u8* sn_Mwrite_u8(sn_CPU* cpuIndex, u16 offset, u8* address, u32 value) {
     printf("Storing <%X> to [%X] [%X]\n", value, cpuIndex->sn_DP, *address);

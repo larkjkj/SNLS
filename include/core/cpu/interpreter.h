@@ -1,3 +1,5 @@
+#ifndef SNLS_INTERPRETER_HEADER
+#define SNLS_INTERPRETER_HEADER
 /*extern void snADC_dp(sn_CPU* cpuIndex);
 extern void snADC_const(sn_CPU* cpuIndex);
 extern void snADC_addr(sn_CPU* cpuIndex);
@@ -135,6 +137,7 @@ extern void snWAI(sn_CPU* cpuIndex);
 extern void snXCE(sn_CPU* cpuIndex);
 */
 
+#include "core/cpu/ricoh.h"
 
 extern void sn_OpBMI(sn_CPU* cpuIndex);
 extern void sn_OpBPL(sn_CPU* cpuIndex);
@@ -187,3 +190,5 @@ extern void sn_OpTYA(sn_CPU* cpuIndex);
 extern void sn_OpTYX(sn_CPU* cpuIndex);
 
 extern void sn_OpXCE(sn_CPU* cpuIndex);
+#endif
+

@@ -1,5 +1,5 @@
-#ifndef	__TYPESH__
-#define __TYPESH__
+#ifndef SNLS_TYPE_HEADER	
+#define SNLS_TYPE_HEADER 
 
 #include <stdint.h>
 

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "vars/memory.h"
+#include "emulator/memory.h"
 
 #include "GL/gl.h"
 #include "SDL2/SDL.h"
@@ -20,7 +20,6 @@ SDL_Event mEvent;
 
 
 extern void initWindow() {
-
 	SDL_Init(SDL_INIT_VIDEO);
 	mWindow = SDL_CreateWindow("SNLS", SDL_WINDOWPOS_CENTERED, \
 			SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
@@ -52,6 +51,7 @@ extern void pollWindow() {
 		switch (mEvent.type) {
 			case SDL_QUIT:
 				exit(1);
+			break;
 		}
 	}
 
