@@ -3,7 +3,7 @@
 in some months, but let's see how it goes...
 
 # SNLS
-![AWESOME LOGO](assets/logo/16larks.png)
+![AWESOME LOGO](assets/logo/SNLS.png)
 
 A SNES emulator focused on perfomance, portability and features.
 
@@ -73,4 +73,4 @@ int main() {
 
 
 
-# idk guys, just makin it, cant take a fuckin shit anmr
+## idk guys, just makin it, cant take a fuckin shit anmr
