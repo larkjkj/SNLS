@@ -1,11 +1,10 @@
-> [!NOTE]
-> This is a WIP of an emulator, i expect to finish this
-in some months, but let's see how it goes...
+> [!IMPORTANT] This is a WIP of an emulator, i expect to finish this in some months, but let's see how it goes...
 
-# SNLS
-![AWESOME LOGO](assets/logo/SNLS.png)
 
-A SNES emulator focused on perfomance, portability and features.
+
+![AWESOME LOGO](assets/logo/logo.png)
+
+A SNES emulator focused on __perfomance__, __portability__ and [__features__](#features).
 
 # What we've got so far?
 ### Basics
@@ -70,7 +69,4 @@ int main() {
 ###### (Need more resources to a full result)
 
 
-
-
-
-## idk guys, just makin it, cant take a fuckin shit anmr
+> ## idk guys, just makin it, cant take a fuckin shit anmr
