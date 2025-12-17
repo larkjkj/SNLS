@@ -10,7 +10,7 @@
 #include "emulator/rom.h"
 #include "emulator/memory.h"
 
-#ifdef _EE
+#ifdef for_ps2
 #include "debug.h"
 #include "ps2_filesystem_driver.h"
 #endif
@@ -27,6 +27,7 @@ int main() {
 	/* Yea, i know this is bad
 	 * but this is used until
 	 * i make a file explorer */
+	//openRom("roms/cputest/cputest-full.sfc", &rom_Ptr);
 	openRom("roms/mariow.sfc", &rom_Ptr);
 	
 	initEmu(&rom_Ptr);

@@ -1,10 +1,9 @@
-#ifndef __ROM_VARS__
-#define __ROM_VARS__
+#ifndef SNLS_ROM_HEADER 
+#define SNLS_ROM_HEADER
 #include <stdio.h>
 #include "general/types.h"
 
 extern FILE* rom_File;
-//extern u32* rom_mBank[4194304];
 extern size_t rom_size;
 
 static u32 address_romTypes[3] = {

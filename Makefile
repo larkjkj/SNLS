@@ -3,24 +3,29 @@ ps2		:= 0
 debug		:= 0
 flags		:= -g -DDEBUG=0
 includes	:= -Iinclude -I.
-libraries	:= -lSDL2 -lfreetype
+libraries	:= -lSDL2 -lfreetype 
 
 ifeq ($(ps2), 1)
 	source		+= src/platform/ps2
 	prefix		:= mips64r5900el-ps2-elf-
-	flags		+= -D_EE
+	flags		+= -D_EE -Dfor_ps2
 	libraries	+= -L$(PS2SDK)/ee/lib -L$(PS2SDK)/ports/lib -L$(GSKIT)/lib \
 			   -ldebug -lkernel -lps2_drivers -lgskit -ldma -ldmakit \
-			   -lps2stuff -lps2gl  -lc -lm -lstdc++
+			   -lps2stuff -lps2gl  -lc -lm -lstdc++ -llibpng16_static \
+			   -lz
 
 	includes	+= -I$(PS2SDK)/ee/include -I$(PS2SDK)/common/include \
 			   -I$(GSKIT)/include -I$(PS2SDK)/ports/include/GL \
-			   -I$(PS2SDK)/ports/include -I$(PS2SDK)/ports/include/freetype2
+			   -I$(PS2SDK)/ports/include -I$(PS2SDK)/ports/include/freetype2 \
+			   -I$(PS2SDK)/ports/include/libpng16/
+
 	linkfile	:= -T$(PS2SDK)/ee/startup/linkfile
 else
-	libraries	+= -lc -lGL
+	libraries	+= -lc -lGL -lpng
 	includes    	+= -I/usr/include/freetype2 \
-			   -I/usr/include/ -I/usr/include/GL
+			   -I/usr/include/ -I/usr/include/GL \
+			   -I/usr/include/libpng16
+
 	source		+= src/platform/pc
 	prefix		:=
 endif
@@ -52,11 +57,12 @@ c_objects	+= $(patsubst %.c,build/%.o,$(c_source))
 all: $(binary)
 
 $(binary): $(c_objects)
+	@echo -e '\n\t Linking to $@...\n'
 	$(compiler) $(linkfile) -o $@ $^ $(includes) $(libraries)
 
 build/%.o: %.c
 	@mkdir -p $(@D)
-	@echo Building $@
+	@echo -e '\n\t Building $@\n'
 	$(compiler) -c $^ -o $@ $(includes) $(flags) $(libraries)
 
 #build/%.o: %.cpp

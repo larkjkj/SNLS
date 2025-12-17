@@ -2,12 +2,12 @@
 #define SNLS_CPU_HEADER
 #include "general/types.h"
 #include "emulator/rom.h"
+#include "emulator/memory.h"
 
 /*ですただ */
 typedef struct sn_CPU {
 	u8*		sn_PC;
-	u32		sn_BC;
-	u32*		sn_subPC;	/* Subroutine */
+	u8*		sn_subPC;	/* Subroutine */
 
 	u16		sn_S;
 	u16		sn_Acc;
@@ -20,6 +20,13 @@ typedef struct sn_CPU {
 
 	u8		sn_Flags;
 
+	/* in the future, i want
+	 * to implement an idea
+	 * that i had in the project
+	 * s starting phase, 
+	 * a single u8 value
+	 * acting all the sn_Flags 
+	 * like the OG hardware */
 	bool 		sn_NFlag;
 	bool 		sn_VFlag;
 	bool 		sn_MFlag;
@@ -32,7 +39,7 @@ typedef struct sn_CPU {
 	bool 		sn_BFlag;
 } sn_CPU;
 
-extern void setupCPU(sn_CPU* cpu, rom* rom_Ptr);
+extern void setupCPU(sn_CPU* cpu, rom* rom_Ptr, emMemory* memory);
 extern void fetchCPU(sn_CPU* cpu);
 
 

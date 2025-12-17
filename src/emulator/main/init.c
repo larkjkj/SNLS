@@ -5,55 +5,67 @@
 
 #include "core/cpu/ricoh.h"
 #include "core/dma.h"
+#include "core/apu.h"
 #include "emulator/memory.h"
+#include "emulator/gs.h"
 #include "general/tools.h"
 
-#include "emulator/gs.h"
+#include "SDL2/SDL.h"
 
 sn_CPU* eCPU;
 sn_PPU* ePPU;
 sn_DMA* eDMA;
+sn_APU* eAPU;
+snRAM* eRAM;
 
 extern void initEmu(rom* rom_Ptr) {
 	ePPU = malloc(sizeof(sn_PPU));
 	eDMA = malloc(sizeof(sn_DMA));
+	eAPU = malloc(sizeof(sn_APU));
+	eRAM = malloc(sizeof(snRAM));
 
-	mMemory mMemory[rom_Ptr->banks];
+	emMap mMap[rom_Ptr->banks];
+	emMemory memory;
+
+	for(unsigned int i = 0; i < 0x8000; i ++) {
+		eRAM->wRAM_exp1[i] = calloc(1, sizeof(u8*));
+		eRAM->wRAM_exp2[i] = calloc(1, sizeof(u8*));
+	}
+
 	for(unsigned int i = 0; i < rom_Ptr->banks; i ++) {
-		attachROM(&mMemory[i], rom_Ptr);
-		mapDMA(eDMA, mMemory[i].dma_map, false);
-		mapPPU(ePPU, mMemory[i].ppu_map, false);
-		for(unsigned int j = 0; j < 0x8000; j ++) {
-			mMemory[i].map[0x8000 + j] = &mMemory[i].rom_buffer[j];
-		}
-		for(unsigned int j = 0; j < 0x3F; j ++) {
-			mMemory[i].map[0x2100 + j] = mMemory[i].ppu_map[j];
-		}
-		for(unsigned int j = 0; j < 0x15; j ++) {
-			mMemory[i].map[0x4200 + j] = mMemory[i].dma_map[j];
-		}
+		attachROM(&mMap[i], rom_Ptr);
 
-		/* reserved for APU */
-		mMemory[i].map[0x2140] = malloc(sizeof(u8*));
-		mMemory[i].map[0x2141] = malloc(sizeof(u8*));
-		mMemory[i].map[0x2142] = malloc(sizeof(u8*));
-		mMemory[i].map[0x2143] = malloc(sizeof(u8*));
+		mapPPU(ePPU, mMap[i].ppu_map, false);
+		mapAPU(eAPU, mMap[i].apu_map, false);
+		mapDMA(eDMA, mMap[i].dma_map, false);
 
+		assignToMap(mMap[i].map, mMap[i].ppu_map, 0x2100, 0x3F, 2);
+		assignToMap(mMap[i].map, mMap[i].apu_map, 0x2140, 0x04, 2);
+		assignToMap(mMap[i].map, mMap[i].dma_map, 0x4200, 0x15, 2);
+		assignToMap(mMap[i].map, &mMap[i].rom_buffer, 0x8000, 0x8000, 2);
+	
 		/* reserved for IO */
-		mMemory[i].map[0x4200] = malloc(sizeof(u8*));
-		mMemory[i].map[0x4212] = malloc(sizeof(u8*));
-		mMemory[i].map[0x4218] = malloc(sizeof(u8*));
-		mMemory[i].map[0x421A] = malloc(sizeof(u8*));
-		mMemory[i].map[0x421C] = malloc(sizeof(u8*));
-		mMemory[i].map[0x421E] = malloc(sizeof(u8*));
-		mMemory[i].map[0x4216] = malloc(sizeof(u8*));
-		mMemory[i].map[0x4217] = malloc(sizeof(u8*));
-		
-		mBank[i] = &mMemory[i].map[0x0];
-	};
+		mMap[i].map[0x4200] = malloc(0x1);
 
+		memory.bank[i] = mMap[i].map;
+		printf("done\n");
+		/* check to confirm that our buffers are really being mapped */	
+		#ifdef DEBUG
+		if (*mMap[i].map[0x8000] != *(&mMap[i].rom_buffer[0x0]) || (mMap[i].map[0x8000] != &mMap[i].rom_buffer[0x0])) {
+			printf("error, rom not matching\n");
+			exit(1);
+		} else {
+		}
+		#endif
+		printf("%X \n", *memory.bank[i][0x8000]);
+	};
+/*	sleep(2);
+		printf("ram\n");
+		mBank[0x7F] = eRAM->wRAM_exp;
+		printf("ram2\n");
+*/
 	eCPU = malloc(sizeof(sn_CPU));
-	setupCPU(eCPU, rom_Ptr);
+	setupCPU(eCPU, rom_Ptr, &memory);
 	while (1) {
 		pollWindow();
 		fetchCPU(eCPU);
@@ -66,22 +78,12 @@ extern void initEmu(rom* rom_Ptr) {
 	free(eDMA);
 
 	for(unsigned int i = 0; i < rom_Ptr->banks; i ++) {
-		free(mMemory[i].rom_buffer);
-		free(mMemory[i].dma_map);
-		free(mMemory[i].ppu_map);
-		for(unsigned int j = 0; j < 0x10000; j ++) {
-			if (mMemory[i].map[j] == NULL) {
-				if (i == rom_Ptr->banks - 1) {
-					printf("no memleak found!\n");
-				} else {
-					printf("no allocated memory in bank[%d] (that's good) \n", i);
-				}
-				break;
-			} else {
-				printf("There's mem leak at %x");
-				free(mMemory[i].map[j]);
-			}
-		}
+		free(mMap[i].map);
 	}
+	for(unsigned int i = 0; i < 0xFF; i ++) {
+		free(mBank[i]);
+	}
+
+	SDL_Quit();
 	return;
 };

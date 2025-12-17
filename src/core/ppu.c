@@ -25,7 +25,10 @@ extern void allocPPU(sn_PPU* ppu) {
 extern void mapPPU(sn_PPU* ppu, u8** ppu_buffer, bool absolute) {
 	/* don't use absolute if you don't know what you're doing. */
 	/* it was here 'cause of a direct mapping method using Map
-	 * instead of PPU_map, it's here for future reasons... */
+	 * instead of PPU_map, it's here for future reasons... 
+	 * also if you use, keep in mind that you will need a bigger
+	 * malloc */
+
 	if (absolute) {
 		ppu_buffer[INIDISP] = &ppu->IniDisp;
 		ppu_buffer[OBJSEL] = &ppu->ObjSel;
@@ -49,6 +52,8 @@ extern void mapPPU(sn_PPU* ppu, u8** ppu_buffer, bool absolute) {
 }
 
 extern void fetchPPU(sn_PPU* ppu) {
+	/* this doesn't "fetch" the ppu, it just prints a value
+	 * of a register to check if mapping is working */
 	printf("ppu_fetch: ppu-> %X \n", ppu->IniDisp);
 	return;
 }

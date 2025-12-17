@@ -2,6 +2,9 @@
 #define SNLS_GS_HEADER 
 #include "general/types.h"
 
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 480
+
 static u64 gs_disp_address = 0;
 
 volatile static u64* gs_disp_pmode = (u64*) 0x12000000;

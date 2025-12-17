@@ -5,11 +5,12 @@
 #include "general/types.h"
 
 #include "core/dma.h"
+#include "core/apu.h"
 #include "emulator/rom.h"
 #include "emulator/memory.h"
 #include "core/ppu.h"
 
-u8** mBank[0xFF];
+u8* mBank[0xFF];
 
 /*u8* memory_vMap = NULL;
 u8* memory_wRAM = NULL;
@@ -28,10 +29,24 @@ u16 holdHiAddr;
  * stop using #include all the time for 2 functions
  * only */
 
-extern void attachROM(mMemory* mMemory, rom* rom_Ptr) {
-	mMemory->rom_buffer = malloc(0x8000);
-	fread(mMemory->rom_buffer, sizeof(u8), 0x8000, rom_File);
+extern void attachROM(emMap* mMap, rom* rom_Ptr) {
+	mMap->rom_buffer = malloc(0x8000);
+	fread(mMap->rom_buffer, sizeof(u8), 0x8000, rom_File);
 	return;
+}
+
+extern void assignToMap(u8** dest, u8** src, unsigned int offset, unsigned int count, unsigned int type) {
+	/* don't misunderstand with a memcpy alternative 
+	 * this references a map to another one */
+	/* double is used here 'cause of rom buffer that uses
+	 * a single pointer */
+
+	/* source[0x8000]  ->  destination[0x133]
+	 * source[0x8001]  ->  destination[0x134]*/
+	/* 2 = u8 */
+	for(unsigned int i = 0; i < count; i ++) {
+		dest[offset + i] = src[i];
+	};
 }
 
 extern void setupSystem(u8* buffer, sn_PPU* ppu, sn_DMA* dma) {

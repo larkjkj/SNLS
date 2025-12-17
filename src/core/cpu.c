@@ -11,7 +11,7 @@
 #include "core/bus.h"
 
 //#include "interpreter.h"
-extern void setupCPU(sn_CPU *cpu, rom* rom_Ptr) {
+extern void setupCPU(sn_CPU *cpu, rom* rom_Ptr, emMemory* memory) {
 	/* Emulation Mode */
 	cpu->sn_EFlag = 1;
 	cpu->sn_MFlag = 1;
@@ -19,13 +19,14 @@ extern void setupCPU(sn_CPU *cpu, rom* rom_Ptr) {
 	cpu->sn_DP = 0;
 	cpu->sn_PB = 0;
 
-	cpu->sn_PC = mBank[cpu->sn_DP][rom_Ptr->resetV];
-	printf("cpu_setup: starting at %p \n", cpu->sn_PC);
+	cpu->sn_PC = memory->bank[cpu->sn_PB][rom_Ptr->resetV];
+	printf("cpu_setup: starting at %p %X \n", cpu->sn_PC, *cpu->sn_PC);
 	//cpu->sn_PC = &mBank[cpu->sn_DP][0x8000];
 }
 
-extern void fetchCPU(sn_CPU* cpu) {
+extern void fetchCPU(sn_CPU* cpu, emMemory* memory) {
 	printf("cpu_fetch: reading opcode %X \n", *cpu->sn_PC);
+	printf("cpu_fetch: %X %X %X \n", cpu->sn_Acc, cpu->sn_X, cpu->sn_Y);
 	switch (*(cpu->sn_PC)) {
 		case _bmi:
 			sn_OpBMI(cpu);
@@ -75,17 +76,29 @@ extern void fetchCPU(sn_CPU* cpu) {
 		case _jmp_addr:
 			sn_OpJMP_addr(cpu);
 			break;
+		case _jsr_addr:
+			sn_OpJSR_addr(cpu);
+			break;
 		case _lda_const:
 			sn_OpLDA_const(cpu);
 			break;
 		case _ldx_const:
 			sn_OpLDX_const(cpu);
 			break;
+		case _ldy_addr:
+			sn_OpLDY_addr(cpu);
+			break;
+		case _ldy_const:
+			sn_OpLDY_const(cpu);
+			break;
 		case _sec:
 			sn_OpSEC(cpu);
 			break;
 		case _sed:
 			sn_OpSED(cpu);
+			break;
+		case _sbc_const:
+			sn_OpSBC_const(cpu);
 			break;
 		case _sei:
 			sn_OpSEI(cpu);
@@ -137,6 +150,10 @@ extern void fetchCPU(sn_CPU* cpu) {
 			break;
 		case _xce:
 			sn_OpXCE(cpu);
+			break;
+		case 0x00:
+			printf("cpu_fetch: cpu crossed at zero, something wrong? \n");
+			sleep(2);
 			break;
 		default:
 			printf("cpu_fetch: unknown opcode %X \n",*(cpu->sn_PC));

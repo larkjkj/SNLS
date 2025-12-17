@@ -6,18 +6,25 @@
 #include "core/dma.h"
 #include "emulator/rom.h"
 
-typedef struct mMemory {
+typedef struct emMemory {
+	u8**	bank[0xFF];
+} emMemory;
+
+typedef struct snRAM {
+	u8	wRAM_low[0x8000];
+	u8	wRAM_high[0x8000];
+	u8*	wRAM_exp1[0x8000];
+	u8*	wRAM_exp2[0x8000];
+	u8*	wRAM_exp;
+} snRAM;
+
+typedef struct emMap {
 	u8*	rom_buffer;
 	u8*	ppu_map[0x3F];
 	u8*	dma_map[0x15];
-
-	/* i'm hella mind confusing about using
-	 * . normal pointer
-	 * . double pointer
-	 * . array of pointers */
-
+	u8*	apu_map[0x04];
 	u8*	map[0x10000];
-} mMemory;
+} emMap;
 
 extern u16* holdPtrAddr;
 extern u16 holdAddr;
@@ -26,8 +33,9 @@ extern u16 holdLoAddr;
 extern u16 holdHiAddr;
 
 
-extern u8** mBank[0xFF];
-extern void attachROM(mMemory* mMemory, rom* rom_Ptr);
+extern u8* mBank[0xFF];
+extern void attachROM(emMap* mMap, rom* rom_Ptr);
+extern void assignToMap(u8** dest, u8** src, unsigned int offset, unsigned int count, unsigned int type);
 
 #define brk_eAddr (u8) rom_buffer[0x00FFFF];
 

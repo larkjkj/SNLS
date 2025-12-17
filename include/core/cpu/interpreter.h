@@ -73,7 +73,6 @@ extern void snLDX_addr(sn_CPU* cpuIndex);
 extern void snLDX_dpY(sn_CPU* cpuIndex);
 extern void snLDX_addrY(sn_CPU* cpuIndex);
 
-extern void snLDY_const(sn_CPU* cpuIndex);
 
 extern void snINC_Acc(sn_CPU* cpuIndex);
 extern void snINC_dp(sn_CPU* cpuIndex);
@@ -149,9 +148,12 @@ extern void sn_OpCLI(sn_CPU* cpuIndex);
 extern void sn_OpCLV(sn_CPU* cpuIndex);
 
 extern void sn_OpJMP_addr(sn_CPU* cpuIndex);
+extern void sn_OpJSR_addr(sn_CPU* cpuIndex);
 
 extern void sn_OpLDA_const(sn_CPU* cpuIndex);
 extern void sn_OpLDX_const(sn_CPU* cpuIndex);
+extern void sn_OpLDY_const(sn_CPU* cpuIndex);
+extern void sn_OpLDY_addr(sn_CPU* cpuIndex);
 
 extern void sn_OpDEA(sn_CPU* cpuIndex);
 extern void sn_OpDEX(sn_CPU* cpuIndex);
@@ -169,6 +171,8 @@ extern void sn_OpINY(sn_CPU* cpuIndex);
 extern void sn_OpSEC(sn_CPU* cpuIndex);
 extern void sn_OpSED(sn_CPU* cpuIndex);
 extern void sn_OpSEI(sn_CPU* cpuIndex);
+
+extern void sn_OpSBC_const(sn_CPU* cpuIndex);
 
 extern void sn_OpREP(sn_CPU* cpuIndex);
 extern void sn_OpSEP(sn_CPU* cpuIndex);
