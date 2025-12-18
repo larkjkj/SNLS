@@ -9,8 +9,4 @@ typedef struct sn_DMA {
 	u8	HdMaen;
 } sn_DMA;
 
-
-extern void mapDMA(sn_DMA* dma, u8** dma_buffer, bool absolute);
-extern void allocDMA(sn_DMA* dma);
-extern void fetchDMA(sn_DMA* dma);
 #endif

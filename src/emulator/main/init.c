@@ -3,12 +3,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "core/cpu/ricoh.h"
-#include "core/dma.h"
-#include "core/apu.h"
+#include "emulator/init.h"
 #include "emulator/memory.h"
 #include "emulator/gs.h"
 #include "general/tools.h"
+#include "general/functions.h"
 
 #include "SDL2/SDL.h"
 
@@ -26,6 +25,8 @@ extern void initEmu(rom* rom_Ptr) {
 
 	emMap mMap[rom_Ptr->banks];
 	emMemory memory;
+	emGeneral general;
+
 
 	for(unsigned int i = 0; i < 0x8000; i ++) {
 		eRAM->wRAM_exp1[i] = calloc(1, sizeof(u8*));
@@ -65,10 +66,17 @@ extern void initEmu(rom* rom_Ptr) {
 		printf("ram2\n");
 */
 	eCPU = malloc(sizeof(sn_CPU));
-	setupCPU(eCPU, rom_Ptr, &memory);
+
+	general.cpu = eCPU;
+	general.apu = eAPU;
+	general.dma = eDMA;
+	general.ppu = ePPU;
+	general.memory = &memory;
+
+	setupCPU(&general, rom_Ptr);
 	while (1) {
 		pollWindow();
-		fetchCPU(eCPU);
+		fetchCPU(&general);
 		fetchPPU(ePPU);
 		fetchDMA(eDMA);
 	}
@@ -79,9 +87,6 @@ extern void initEmu(rom* rom_Ptr) {
 
 	for(unsigned int i = 0; i < rom_Ptr->banks; i ++) {
 		free(mMap[i].map);
-	}
-	for(unsigned int i = 0; i < 0xFF; i ++) {
-		free(mBank[i]);
 	}
 
 	SDL_Quit();

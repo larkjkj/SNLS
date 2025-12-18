@@ -32,11 +32,6 @@ extern u32 reset_snV;
 extern u16 holdLoAddr;
 extern u16 holdHiAddr;
 
-
-extern u8* mBank[0xFF];
-extern void attachROM(emMap* mMap, rom* rom_Ptr);
-extern void assignToMap(u8** dest, u8** src, unsigned int offset, unsigned int count, unsigned int type);
-
 #define brk_eAddr (u8) rom_buffer[0x00FFFF];
 
 #endif

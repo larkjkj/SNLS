@@ -2,26 +2,26 @@
 #include <unistd.h>
 
 #include "emulator/memory.h"
-#include "core/cpu/ricoh.h"
+#include "emulator/init.h"
 #include "core/bus.h"
 
 /* Syntax it's basically use the corresponding byte read and
  * pass the following argumetns:
- * CPU pointer -> cpuIndex
- * Offset -> 0 / cpuIndex->sn_DP / cpuIndex->sn_X
+ * CPU pointer -> emulator->cpu
+ * Offset -> 0 / emulator->cpu->sn_DP / emulator->cpu->sn_X
  * (There's a reason to bus have 2 differents offset, 'cause
  * SNES have X indexed addresses or DP indexed, or indirect acesses)
  */
 
-extern void sn_OpBMI(sn_CPU* cpuIndex) {
-	if (cpuIndex->sn_NFlag)
-		cpuIndex->sn_PC += (s8) sn_Mread_u8_const(cpuIndex, 0);
+extern void sn_OpBMI(emGeneral* emulator) {
+	if (emulator->cpu->sn_NFlag)
+		emulator->cpu->sn_PC += (s8) sn_Mread_u8_const(emulator->cpu, 0);
 	return;
 };
 
-extern void sn_OpBPL(sn_CPU* cpuIndex) {
-	if (!cpuIndex->sn_NFlag) {
-		cpuIndex->sn_PC = cpuIndex->sn_PC + (s8) sn_Mread_u8_const(cpuIndex, 0) + 1;
+extern void sn_OpBPL(emGeneral* emulator) {
+	if (!emulator->cpu->sn_NFlag) {
+		emulator->cpu->sn_PC = emulator->cpu->sn_PC + (s8) sn_Mread_u8_const(emulator->cpu, 0) + 1;
 		usleep(10000);
 	} else {
 		printf("exiting \n");
@@ -30,288 +30,288 @@ extern void sn_OpBPL(sn_CPU* cpuIndex) {
 	return;
 };
 
-extern void sn_OpBRA(sn_CPU* cpuIndex) {
-	cpuIndex->sn_PC = cpuIndex->sn_PC + (*cpuIndex->sn_PC - (s8) sn_Mread_u8_const(cpuIndex, 0));
+extern void sn_OpBRA(emGeneral* emulator) {
+	emulator->cpu->sn_PC = emulator->cpu->sn_PC + (*emulator->cpu->sn_PC - (s8) sn_Mread_u8_const(emulator->cpu, 0));
 	return;
 };
 
-extern void sn_OpCLC(sn_CPU* cpuIndex) {
-	cpuIndex->sn_CFlag = 0;
+extern void sn_OpCLC(emGeneral* emulator) {
+	emulator->cpu->sn_CFlag = 0;
 	return;
 };
 
-extern void sn_OpCLD(sn_CPU* cpuIndex) {
-	cpuIndex->sn_DFlag = 0;
+extern void sn_OpCLD(emGeneral* emulator) {
+	emulator->cpu->sn_DFlag = 0;
 	return;
 };
 
-extern void sn_OpCLI(sn_CPU* cpuIndex) {
-	cpuIndex->sn_IFlag = 0;
+extern void sn_OpCLI(emGeneral* emulator) {
+	emulator->cpu->sn_IFlag = 0;
 	return;
 };
 
-extern void sn_OpCLV(sn_CPU* cpuIndex) {
-	cpuIndex->sn_VFlag = 0;
+extern void sn_OpCLV(emGeneral* emulator) {
+	emulator->cpu->sn_VFlag = 0;
 	return;
 };
 
-extern void sn_OpDEA(sn_CPU* cpuIndex) {
-	cpuIndex->sn_Acc -= 1;
+extern void sn_OpDEA(emGeneral* emulator) {
+	emulator->cpu->sn_Acc -= 1;
 	return;
 };
 
-extern void sn_OpDEX(sn_CPU* cpuIndex) {
-	cpuIndex->sn_X -= 1;
-	cpuIndex->sn_NFlag = ((s16) cpuIndex->sn_X < 0 ? 1 : 0);
-	cpuIndex->sn_ZFlag = (cpuIndex->sn_X == 0 ? 1 : 0);
+extern void sn_OpDEX(emGeneral* emulator) {
+	emulator->cpu->sn_X -= 1;
+	emulator->cpu->sn_NFlag = ((s16) emulator->cpu->sn_X < 0 ? 1 : 0);
+	emulator->cpu->sn_ZFlag = (emulator->cpu->sn_X == 0 ? 1 : 0);
 	return;
 };
 
-extern void sn_OpDEY(sn_CPU* cpuIndex) {
-	cpuIndex->sn_Y -= 1;
-	cpuIndex->sn_NFlag = ((s16) cpuIndex->sn_Y < 0 ? 1 : 0);
-	cpuIndex->sn_ZFlag = (cpuIndex->sn_Y == 0 ? 1 : 0);
+extern void sn_OpDEY(emGeneral* emulator) {
+	emulator->cpu->sn_Y -= 1;
+	emulator->cpu->sn_NFlag = ((s16) emulator->cpu->sn_Y < 0 ? 1 : 0);
+	emulator->cpu->sn_ZFlag = (emulator->cpu->sn_Y == 0 ? 1 : 0);
 	return;
 };
 
-extern void sn_OpJSR_addr(sn_CPU* cpuIndex) {
-	cpuIndex->sn_PC = sn_Mread_u16(cpuIndex, 0, true);
+extern void sn_OpJSR_addr(emGeneral* emulator) {
+	emulator->cpu->sn_PC = sn_Mread_u16(emulator->cpu, 0, true);
 	return;
 };
 
-extern void sn_OpINA(sn_CPU* cpuIndex) {
-	cpuIndex->sn_Acc += 1;
-	cpuIndex->sn_NFlag = ((s16) cpuIndex->sn_Acc < 0 ? 1 : 0);
-	cpuIndex->sn_ZFlag = (cpuIndex->sn_Acc == 0 ? 1 : 0);
+extern void sn_OpINA(emGeneral* emulator) {
+	emulator->cpu->sn_Acc += 1;
+	emulator->cpu->sn_NFlag = ((s16) emulator->cpu->sn_Acc < 0 ? 1 : 0);
+	emulator->cpu->sn_ZFlag = (emulator->cpu->sn_Acc == 0 ? 1 : 0);
 	return;
 };
 
-extern void sn_OpINC_dp(sn_CPU* cpuIndex) {
-	cpuIndex->sn_DP += 1;
-	cpuIndex->sn_NFlag = ((s16) cpuIndex->sn_DP < 0 ? 1 : 0);
-	cpuIndex->sn_ZFlag = (cpuIndex->sn_DP == 0 ? 1 : 0);
+extern void sn_OpINC_dp(emGeneral* emulator) {
+	emulator->cpu->sn_DP += 1;
+	emulator->cpu->sn_NFlag = ((s16) emulator->cpu->sn_DP < 0 ? 1 : 0);
+	emulator->cpu->sn_ZFlag = (emulator->cpu->sn_DP == 0 ? 1 : 0);
 	return;
 };
 
-extern void sn_OpINC_addr(sn_CPU* cpuIndex) {
-	sn_Mwrite_ptr(cpuIndex, 0, sn_Mread_u16(cpuIndex, 0, false), +1);
-	cpuIndex->sn_NFlag = ((s16) holdAddr < 0 ? 1 : 0);
-	cpuIndex->sn_ZFlag = (holdAddr == 0 ? 1 : 0);
+extern void sn_OpINC_addr(emGeneral* emulator) {
+	sn_Mwrite_ptr(emulator->cpu, 0, sn_Mread_u16(emulator->cpu, 0, false), +1);
+	emulator->cpu->sn_NFlag = ((s16) holdAddr < 0 ? 1 : 0);
+	emulator->cpu->sn_ZFlag = (holdAddr == 0 ? 1 : 0);
 	return;
 };
 
-extern void sn_OpINC_dpX(sn_CPU* cpuIndex) {
-	holdAddr = *sn_Mwrite_ptr(cpuIndex, cpuIndex->sn_X, sn_Mread_u8(cpuIndex, cpuIndex->sn_DP), +1);
-	cpuIndex->sn_NFlag = ((s16) holdAddr < 0 ? 1 : 0);
-	cpuIndex->sn_ZFlag = (holdAddr == 0 ? 1 : 0);
+extern void sn_OpINC_dpX(emGeneral* emulator) {
+	holdAddr = *sn_Mwrite_ptr(emulator->cpu, emulator->cpu->sn_X, sn_Mread_u8(emulator->cpu, emulator->cpu->sn_DP), +1);
+	emulator->cpu->sn_NFlag = ((s16) holdAddr < 0 ? 1 : 0);
+	emulator->cpu->sn_ZFlag = (holdAddr == 0 ? 1 : 0);
 	return;
 };
 
-extern void sn_OpINC_addrX(sn_CPU* cpuIndex) {
-	holdAddr = *sn_Mwrite_ptr(cpuIndex, cpuIndex->sn_X, sn_Mread_u16(cpuIndex, 0, false), +1);
-	cpuIndex->sn_NFlag = ((s16) holdAddr < 0 ? 1 : 0);
-	cpuIndex->sn_ZFlag = (holdAddr == 0 ? 1 : 0);
+extern void sn_OpINC_addrX(emGeneral* emulator) {
+	holdAddr = *sn_Mwrite_ptr(emulator->cpu, emulator->cpu->sn_X, sn_Mread_u16(emulator->cpu, 0, false), +1);
+	emulator->cpu->sn_NFlag = ((s16) holdAddr < 0 ? 1 : 0);
+	emulator->cpu->sn_ZFlag = (holdAddr == 0 ? 1 : 0);
 	return;
 };
 
-extern void sn_OpINX(sn_CPU* cpuIndex) {
-	cpuIndex->sn_X += 1;
-	cpuIndex->sn_NFlag = ((s16) cpuIndex->sn_X < 0 ? 1 : 0);
-	cpuIndex->sn_ZFlag = (cpuIndex->sn_X == 0 ? 1 : 0);
+extern void sn_OpINX(emGeneral* emulator) {
+	emulator->cpu->sn_X += 1;
+	emulator->cpu->sn_NFlag = ((s16) emulator->cpu->sn_X < 0 ? 1 : 0);
+	emulator->cpu->sn_ZFlag = (emulator->cpu->sn_X == 0 ? 1 : 0);
 	return;
 };
 
-extern void sn_OpINY(sn_CPU* cpuIndex) {
-	cpuIndex->sn_Y += 1;
-	cpuIndex->sn_NFlag = ((s16) cpuIndex->sn_Y < 0 ? 1 : 0);
-	cpuIndex->sn_ZFlag = (cpuIndex->sn_Y == 0 ? 1 : 0);
+extern void sn_OpINY(emGeneral* emulator) {
+	emulator->cpu->sn_Y += 1;
+	emulator->cpu->sn_NFlag = ((s16) emulator->cpu->sn_Y < 0 ? 1 : 0);
+	emulator->cpu->sn_ZFlag = (emulator->cpu->sn_Y == 0 ? 1 : 0);
 	return;
 };
 
-extern void sn_OpJMP_addr(sn_CPU* cpuIndex) {
-	cpuIndex->sn_PC = (u8*) sn_Mread_u16(cpuIndex, 0, false) - 1;
+extern void sn_OpJMP_addr(emGeneral* emulator) {
+	emulator->cpu->sn_PC = (u8*) sn_Mread_u16(emulator->cpu, 0, false) - 1;
 	return;
 };
 
-extern void sn_OpJMP_long(sn_CPU* cpuIndex) {
-	cpuIndex->sn_PC = sn_Mread_u24(cpuIndex, 0, true) - 1;
+extern void sn_OpJMP_long(emGeneral* emulator) {
+	emulator->cpu->sn_PC = sn_Mread_u24(emulator->cpu, 0, true) - 1;
 	return;
 };
 
-extern void sn_OpLDA_const(sn_CPU* cpuIndex) {
-	if (!cpuIndex->sn_MFlag) {
-		cpuIndex->sn_Acc = sn_Mread_u16_const(cpuIndex, 0);
+extern void sn_OpLDA_const(emGeneral* emulator) {
+	if (!emulator->cpu->sn_MFlag) {
+		emulator->cpu->sn_Acc = sn_Mread_u16_const(emulator->cpu, 0);
 	} else {
-		cpuIndex->sn_Acc = sn_Mread_u8_const(cpuIndex, 0);
+		emulator->cpu->sn_Acc = sn_Mread_u8_const(emulator->cpu, 0);
 	}
-	cpuIndex->sn_NFlag = (s16) cpuIndex->sn_Acc < 0 ? 1 : 0;
-	cpuIndex->sn_ZFlag = cpuIndex->sn_Acc == 0 ? 1 : 0;
+	emulator->cpu->sn_NFlag = (s16) emulator->cpu->sn_Acc < 0 ? 1 : 0;
+	emulator->cpu->sn_ZFlag = emulator->cpu->sn_Acc == 0 ? 1 : 0;
 	return;
 };
 
-extern void sn_OpLDX_const(sn_CPU* cpuIndex) {
-	if (!cpuIndex->sn_XFlag) {
-		cpuIndex->sn_X = sn_Mread_u16_const(cpuIndex, 0);
+extern void sn_OpLDX_const(emGeneral* emulator) {
+	if (!emulator->cpu->sn_XFlag) {
+		emulator->cpu->sn_X = sn_Mread_u16_const(emulator->cpu, 0);
 	} else {
-		cpuIndex->sn_X = sn_Mread_u8_const(cpuIndex, 0);
+		emulator->cpu->sn_X = sn_Mread_u8_const(emulator->cpu, 0);
 	}
-	cpuIndex->sn_NFlag = (s16) cpuIndex->sn_X < 0 ? 1 : 0;
-	cpuIndex->sn_ZFlag = cpuIndex->sn_X == 0 ? 1 : 0;
+	emulator->cpu->sn_NFlag = (s16) emulator->cpu->sn_X < 0 ? 1 : 0;
+	emulator->cpu->sn_ZFlag = emulator->cpu->sn_X == 0 ? 1 : 0;
 	return;
 };
 
-extern void sn_OpLDY_addr(sn_CPU* cpuIndex) {
+extern void sn_OpLDY_addr(emGeneral* emulator) {
 	/*TODO: make new functions for replacing
 	 * pointer dereference of u16 addresses */
-	cpuIndex->sn_Y = *sn_Mread_u16(cpuIndex, 0, false);
-	cpuIndex->sn_NFlag = (s16) cpuIndex->sn_Y < 0 ? 1 : 0;
-	cpuIndex->sn_ZFlag = cpuIndex->sn_Y == 0 ? 1 : 0;
+	emulator->cpu->sn_Y = *sn_Mread_u16(emulator->cpu, 0, false);
+	emulator->cpu->sn_NFlag = (s16) emulator->cpu->sn_Y < 0 ? 1 : 0;
+	emulator->cpu->sn_ZFlag = emulator->cpu->sn_Y == 0 ? 1 : 0;
 	return;
 };
-extern void sn_OpLDY_const(sn_CPU* cpuIndex) {
-	if (!cpuIndex->sn_XFlag) {
-		cpuIndex->sn_Y = sn_Mread_u16_const(cpuIndex, 0);
+extern void sn_OpLDY_const(emGeneral* emulator) {
+	if (!emulator->cpu->sn_XFlag) {
+		emulator->cpu->sn_Y = sn_Mread_u16_const(emulator->cpu, 0);
 	} else {
-		cpuIndex->sn_Y = sn_Mread_u8_const(cpuIndex, 0);
+		emulator->cpu->sn_Y = sn_Mread_u8_const(emulator->cpu, 0);
 	}
-	cpuIndex->sn_NFlag = (s16) cpuIndex->sn_Y < 0 ? 1 : 0;
-	cpuIndex->sn_ZFlag = cpuIndex->sn_Y == 0 ? 1 : 0;
+	emulator->cpu->sn_NFlag = (s16) emulator->cpu->sn_Y < 0 ? 1 : 0;
+	emulator->cpu->sn_ZFlag = emulator->cpu->sn_Y == 0 ? 1 : 0;
 	return;
 };
 
-extern void sn_OpSTA_addr(sn_CPU* cpuIndex) {
-	sn_Mwrite_ptr(cpuIndex, 0, sn_Mread_u16(cpuIndex, 0, false), cpuIndex->sn_Acc);
+extern void sn_OpSTA_addr(emGeneral* emulator) {
+	sn_Mwrite_ptr(emulator->cpu, 0, sn_Mread_u16(emulator->cpu, 0, false), emulator->cpu->sn_Acc);
 	return;
 };
 
-extern void sn_OpSTA_long(sn_CPU *cpuIndex) {
-	sn_Mwrite_ptr(cpuIndex, 0, sn_Mread_u24(cpuIndex, 0, false), cpuIndex->sn_Acc);
+extern void sn_OpSTA_long(emGeneral* emulator) {
+	sn_Mwrite_ptr(emulator->cpu, 0, sn_Mread_u24(emulator->cpu, 0, false), emulator->cpu->sn_Acc);
 	return;
 };
 
-extern void sn_OpSTA_longX(sn_CPU* cpuIndex) {
-	sn_Mwrite_ptr(cpuIndex, cpuIndex->sn_X, sn_Mread_u24(cpuIndex, 0, false), cpuIndex->sn_Acc);
+extern void sn_OpSTA_longX(emGeneral* emulator) {
+	sn_Mwrite_ptr(emulator->cpu, emulator->cpu->sn_X, sn_Mread_u24(emulator->cpu, 0, false), emulator->cpu->sn_Acc);
 	return;
 };
 
-extern void sn_OpSTZ_dp(sn_CPU* cpuIndex) {
-	sn_Mwrite_ptr(cpuIndex, cpuIndex->sn_DP, sn_Mread_u8(cpuIndex, 0), 0);
+extern void sn_OpSTZ_dp(emGeneral* emulator) {
+	sn_Mwrite_ptr(emulator->cpu, emulator->cpu->sn_DP, sn_Mread_u8(emulator->cpu, 0), 0);
 	return;
 };
-extern void sn_OpSTZ_dpX(sn_CPU* cpuIndex) {
-	sn_Mwrite_ptr(cpuIndex, cpuIndex->sn_X, sn_Mread_u8(cpuIndex, cpuIndex->sn_DP), 0);
+extern void sn_OpSTZ_dpX(emGeneral* emulator) {
+	sn_Mwrite_ptr(emulator->cpu, emulator->cpu->sn_X, sn_Mread_u8(emulator->cpu, emulator->cpu->sn_DP), 0);
 	return;
 };
-extern void sn_OpSTZ_addr(sn_CPU* cpuIndex) {
-	sn_Mwrite_ptr(cpuIndex, 0, sn_Mread_u16(cpuIndex, 0, false), 0);
+extern void sn_OpSTZ_addr(emGeneral* emulator) {
+	sn_Mwrite_ptr(emulator->cpu, 0, sn_Mread_u16(emulator->cpu, 0, false), 0);
 	return;
 };
-extern void sn_OpSTZ_addrX(sn_CPU* cpuIndex) {
-	sn_Mwrite_ptr(cpuIndex, cpuIndex->sn_X, sn_Mread_u16(cpuIndex, 0, false), 0);
-	return;
-};
-
-extern void sn_OpSEC(sn_CPU* cpuIndex) {
-	cpuIndex->sn_CFlag = 1;
+extern void sn_OpSTZ_addrX(emGeneral* emulator) {
+	sn_Mwrite_ptr(emulator->cpu, emulator->cpu->sn_X, sn_Mread_u16(emulator->cpu, 0, false), 0);
 	return;
 };
 
-extern void sn_OpSED(sn_CPU* cpuIndex) {
-	cpuIndex->sn_DFlag = 1;
+extern void sn_OpSEC(emGeneral* emulator) {
+	emulator->cpu->sn_CFlag = 1;
 	return;
 };
 
-extern void sn_OpSEI(sn_CPU* cpuIndex) {
-	cpuIndex->sn_IFlag = 1;
+extern void sn_OpSED(emGeneral* emulator) {
+	emulator->cpu->sn_DFlag = 1;
 	return;
 };
 
-extern void sn_OpREP(sn_CPU* cpuIndex) {
-	sn_Mread_u8_const(cpuIndex, 0);
-	cpuIndex->sn_CFlag = (*cpuIndex->sn_PC & 0x80 ? 0 : cpuIndex->sn_CFlag);
-	cpuIndex->sn_VFlag = (*cpuIndex->sn_PC & 0x40 ? 0 : cpuIndex->sn_VFlag);
-	cpuIndex->sn_MFlag = (*cpuIndex->sn_PC & 0x20 ? 0 : cpuIndex->sn_MFlag);
-	cpuIndex->sn_XFlag = (*cpuIndex->sn_PC & 0x10 ? 0 : cpuIndex->sn_XFlag);
-	cpuIndex->sn_DFlag = (*cpuIndex->sn_PC & 0x08 ? 0 : cpuIndex->sn_DFlag);
-	cpuIndex->sn_IFlag = (*cpuIndex->sn_PC & 0x04 ? 0 : cpuIndex->sn_IFlag);
-	cpuIndex->sn_ZFlag = (*cpuIndex->sn_PC & 0x02 ? 0 : cpuIndex->sn_ZFlag);
-	cpuIndex->sn_EFlag = (*cpuIndex->sn_PC & 0x01 ? 0 : cpuIndex->sn_EFlag);
+extern void sn_OpSEI(emGeneral* emulator) {
+	emulator->cpu->sn_IFlag = 1;
 	return;
 };
 
-extern void sn_OpSBC_const(sn_CPU* cpuIndex) {
-	if (!cpuIndex->sn_MFlag) {
-		cpuIndex->sn_Acc = cpuIndex->sn_Acc - sn_Mread_u16_const(cpuIndex, 0) + (!cpuIndex->sn_CFlag ? 1 : 0);
+extern void sn_OpREP(emGeneral* emulator) {
+	sn_Mread_u8_const(emulator->cpu, 0);
+	emulator->cpu->sn_CFlag = (*emulator->cpu->sn_PC & 0x80 ? 0 : emulator->cpu->sn_CFlag);
+	emulator->cpu->sn_VFlag = (*emulator->cpu->sn_PC & 0x40 ? 0 : emulator->cpu->sn_VFlag);
+	emulator->cpu->sn_MFlag = (*emulator->cpu->sn_PC & 0x20 ? 0 : emulator->cpu->sn_MFlag);
+	emulator->cpu->sn_XFlag = (*emulator->cpu->sn_PC & 0x10 ? 0 : emulator->cpu->sn_XFlag);
+	emulator->cpu->sn_DFlag = (*emulator->cpu->sn_PC & 0x08 ? 0 : emulator->cpu->sn_DFlag);
+	emulator->cpu->sn_IFlag = (*emulator->cpu->sn_PC & 0x04 ? 0 : emulator->cpu->sn_IFlag);
+	emulator->cpu->sn_ZFlag = (*emulator->cpu->sn_PC & 0x02 ? 0 : emulator->cpu->sn_ZFlag);
+	emulator->cpu->sn_EFlag = (*emulator->cpu->sn_PC & 0x01 ? 0 : emulator->cpu->sn_EFlag);
+	return;
+};
+
+extern void sn_OpSBC_const(emGeneral* emulator) {
+	if (!emulator->cpu->sn_MFlag) {
+		emulator->cpu->sn_Acc = emulator->cpu->sn_Acc - sn_Mread_u16_const(emulator->cpu, 0) + (!emulator->cpu->sn_CFlag ? 1 : 0);
 	} else {
-		cpuIndex->sn_Acc = cpuIndex->sn_Acc - sn_Mread_u8_const(cpuIndex, 0) + (!cpuIndex->sn_CFlag ? 1 : 0);
+		emulator->cpu->sn_Acc = emulator->cpu->sn_Acc - sn_Mread_u8_const(emulator->cpu, 0) + (!emulator->cpu->sn_CFlag ? 1 : 0);
 	}
-	cpuIndex->sn_NFlag = ((s16) cpuIndex->sn_Acc < 0 ? 1 : 0);
-	cpuIndex->sn_ZFlag = (cpuIndex->sn_Acc == 0 ? 1 : 0);
-	cpuIndex->sn_VFlag = ((cpuIndex->sn_Acc) > 0xFFFF ? 1 : 0);
-	cpuIndex->sn_CFlag = ((s16) cpuIndex->sn_Acc == 0 ? 1 : 0);
+	emulator->cpu->sn_NFlag = ((s16) emulator->cpu->sn_Acc < 0 ? 1 : 0);
+	emulator->cpu->sn_ZFlag = (emulator->cpu->sn_Acc == 0 ? 1 : 0);
+	emulator->cpu->sn_VFlag = ((emulator->cpu->sn_Acc) > 0xFFFF ? 1 : 0);
+	emulator->cpu->sn_CFlag = ((s16) emulator->cpu->sn_Acc == 0 ? 1 : 0);
 };
 
-extern void sn_OpSEP(sn_CPU* cpuIndex) {
-	sn_Mread_u8_const(cpuIndex, 0);
-	cpuIndex->sn_CFlag = (*cpuIndex->sn_PC & 0x80 ? 1 : cpuIndex->sn_CFlag);
-	cpuIndex->sn_VFlag = (*cpuIndex->sn_PC & 0x40 ? 1 : cpuIndex->sn_VFlag);
-	cpuIndex->sn_MFlag = (*cpuIndex->sn_PC & 0x20 ? 1 : cpuIndex->sn_MFlag);
-	cpuIndex->sn_XFlag = (*cpuIndex->sn_PC & 0x10 ? 1 : cpuIndex->sn_XFlag);
-	cpuIndex->sn_DFlag = (*cpuIndex->sn_PC & 0x08 ? 1 : cpuIndex->sn_DFlag);
-	cpuIndex->sn_IFlag = (*cpuIndex->sn_PC & 0x04 ? 1 : cpuIndex->sn_IFlag);
-	cpuIndex->sn_ZFlag = (*cpuIndex->sn_PC & 0x02 ? 1 : cpuIndex->sn_ZFlag);
-	cpuIndex->sn_EFlag = (*cpuIndex->sn_PC & 0x01 ? 1 : cpuIndex->sn_EFlag);
+extern void sn_OpSEP(emGeneral* emulator) {
+	sn_Mread_u8_const(emulator->cpu, 0);
+	emulator->cpu->sn_CFlag = (*emulator->cpu->sn_PC & 0x80 ? 1 : emulator->cpu->sn_CFlag);
+	emulator->cpu->sn_VFlag = (*emulator->cpu->sn_PC & 0x40 ? 1 : emulator->cpu->sn_VFlag);
+	emulator->cpu->sn_MFlag = (*emulator->cpu->sn_PC & 0x20 ? 1 : emulator->cpu->sn_MFlag);
+	emulator->cpu->sn_XFlag = (*emulator->cpu->sn_PC & 0x10 ? 1 : emulator->cpu->sn_XFlag);
+	emulator->cpu->sn_DFlag = (*emulator->cpu->sn_PC & 0x08 ? 1 : emulator->cpu->sn_DFlag);
+	emulator->cpu->sn_IFlag = (*emulator->cpu->sn_PC & 0x04 ? 1 : emulator->cpu->sn_IFlag);
+	emulator->cpu->sn_ZFlag = (*emulator->cpu->sn_PC & 0x02 ? 1 : emulator->cpu->sn_ZFlag);
+	emulator->cpu->sn_EFlag = (*emulator->cpu->sn_PC & 0x01 ? 1 : emulator->cpu->sn_EFlag);
 	printf("sep \n");
 	sleep(1);
 	return;
 };
 
-extern void sn_OpTAX(sn_CPU* cpuIndex) {
-	cpuIndex->sn_X = cpuIndex->sn_Acc;
-	cpuIndex->sn_NFlag = ((s16) cpuIndex->sn_X < 0 ? 1 : 0);
-	cpuIndex->sn_ZFlag = (cpuIndex->sn_X == 0 ? 1 : 0);
+extern void sn_OpTAX(emGeneral* emulator) {
+	emulator->cpu->sn_X = emulator->cpu->sn_Acc;
+	emulator->cpu->sn_NFlag = ((s16) emulator->cpu->sn_X < 0 ? 1 : 0);
+	emulator->cpu->sn_ZFlag = (emulator->cpu->sn_X == 0 ? 1 : 0);
 	return;
 };
 
-extern void sn_OpTAY(sn_CPU* cpuIndex) {
-	cpuIndex->sn_Y = cpuIndex->sn_Acc;
-	cpuIndex->sn_NFlag = ((s16) cpuIndex->sn_Y < 0 ? 1 : 0);
-	cpuIndex->sn_ZFlag = (cpuIndex->sn_Y == 0 ? 1 : 0);
+extern void sn_OpTAY(emGeneral* emulator) {
+	emulator->cpu->sn_Y = emulator->cpu->sn_Acc;
+	emulator->cpu->sn_NFlag = ((s16) emulator->cpu->sn_Y < 0 ? 1 : 0);
+	emulator->cpu->sn_ZFlag = (emulator->cpu->sn_Y == 0 ? 1 : 0);
 	return;
 };
 
-extern void sn_OpTCD(sn_CPU* cpuIndex) {
-	cpuIndex->sn_DP = cpuIndex->sn_Acc;
-	cpuIndex->sn_NFlag = ((s16) cpuIndex->sn_DP < 0 ? 1 : 0);
-	cpuIndex->sn_ZFlag = (cpuIndex->sn_DP == 0 ? 1 : 0);
+extern void sn_OpTCD(emGeneral* emulator) {
+	emulator->cpu->sn_DP = emulator->cpu->sn_Acc;
+	emulator->cpu->sn_NFlag = ((s16) emulator->cpu->sn_DP < 0 ? 1 : 0);
+	emulator->cpu->sn_ZFlag = (emulator->cpu->sn_DP == 0 ? 1 : 0);
 	return;
 };
 
-extern void sn_OpTXY(sn_CPU* cpuIndex) {
-	cpuIndex->sn_Acc = cpuIndex->sn_Y;
-	cpuIndex->sn_NFlag = ((s16) cpuIndex->sn_Acc < 0 ? 1 : 0);
-	cpuIndex->sn_ZFlag = (cpuIndex->sn_Acc == 0 ? 1 : 0);
+extern void sn_OpTXY(emGeneral* emulator) {
+	emulator->cpu->sn_Acc = emulator->cpu->sn_Y;
+	emulator->cpu->sn_NFlag = ((s16) emulator->cpu->sn_Acc < 0 ? 1 : 0);
+	emulator->cpu->sn_ZFlag = (emulator->cpu->sn_Acc == 0 ? 1 : 0);
 	return;
 };
 
-extern void sn_OpTYA(sn_CPU* cpuIndex) {
-	cpuIndex->sn_Acc = cpuIndex->sn_Y;
-	cpuIndex->sn_NFlag = ((s16) cpuIndex->sn_Acc < 0 ? 1 : 0);
-	cpuIndex->sn_ZFlag = (cpuIndex->sn_Acc == 0 ? 1 : 0);
+extern void sn_OpTYA(emGeneral* emulator) {
+	emulator->cpu->sn_Acc = emulator->cpu->sn_Y;
+	emulator->cpu->sn_NFlag = ((s16) emulator->cpu->sn_Acc < 0 ? 1 : 0);
+	emulator->cpu->sn_ZFlag = (emulator->cpu->sn_Acc == 0 ? 1 : 0);
 	return;
 };
-extern void sn_OpTYX(sn_CPU* cpuIndex) {
-	cpuIndex->sn_Acc = cpuIndex->sn_Y;
-	cpuIndex->sn_NFlag = ((s16) cpuIndex->sn_Acc < 0 ? 1 : 0);
-	cpuIndex->sn_ZFlag = (cpuIndex->sn_Acc == 0 ? 1 : 0);
+extern void sn_OpTYX(emGeneral* emulator) {
+	emulator->cpu->sn_Acc = emulator->cpu->sn_Y;
+	emulator->cpu->sn_NFlag = ((s16) emulator->cpu->sn_Acc < 0 ? 1 : 0);
+	emulator->cpu->sn_ZFlag = (emulator->cpu->sn_Acc == 0 ? 1 : 0);
 	return;
 };
 
-extern void sn_OpXCE(sn_CPU* cpuIndex) {
-	u16 temp_C = cpuIndex->sn_CFlag;
-	u16 temp_E = cpuIndex->sn_EFlag;
+extern void sn_OpXCE(emGeneral* emulator) {
+	u16 temp_C = emulator->cpu->sn_CFlag;
+	u16 temp_E = emulator->cpu->sn_EFlag;
 
-	cpuIndex->sn_EFlag = temp_C;
-	cpuIndex->sn_CFlag = temp_E;
+	emulator->cpu->sn_EFlag = temp_C;
+	emulator->cpu->sn_CFlag = temp_E;
 	return;
 };

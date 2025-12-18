@@ -12,7 +12,4 @@ volatile static u64* gs_disp_displ1 = (u64*) 0x12000080;
 volatile static u64* gs_disp_dispf1 = (u64*) 0x12000070;
 volatile static u32* gs_disp_color = (u32*) 0x120000E0;
 
-extern void initWindow();
-extern void pollWindow();
-
 #endif

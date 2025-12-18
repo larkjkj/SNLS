@@ -130,8 +130,4 @@ typedef struct sn_PPU {
 	u8	vMDATAH;
 } sn_PPU;
 
-extern void mapPPU(sn_PPU* ppu, u8** ppu_buffer, bool absolute);
-extern void fetchPPU(sn_PPU* ppu);
-extern void allocPPU(sn_PPU* ppu);
-
 #endif

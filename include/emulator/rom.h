@@ -1,19 +1,8 @@
 #ifndef SNLS_ROM_HEADER 
 #define SNLS_ROM_HEADER
+
 #include <stdio.h>
 #include "general/types.h"
-
-extern FILE* rom_File;
-extern size_t rom_size;
-
-static u32 address_romTypes[3] = {
-	0x7FD5,
-	0xFFD5,
-};
-
-static u8 valid_romTypes[7] = {
-	0x20, 0x21, 0x23, 0x30, 0x31, 0x32, 0x35
-};
 
 typedef struct rom {
 	char*	headername;
@@ -26,7 +15,16 @@ typedef struct rom {
 	u16	resetV;
 } rom;
 
-extern void openRom(char* rom_name, rom* rom_Ptr);
-extern u8 returnBank(size_t byteSize);
+extern FILE* rom_File;
+extern size_t rom_size;
+
+static u32 address_romTypes[3] = {
+	0x7FD5,
+	0xFFD5,
+};
+
+static u8 valid_romTypes[7] = {
+	0x20, 0x21, 0x23, 0x30, 0x31, 0x32, 0x35
+};
 
 #endif

@@ -5,10 +5,9 @@
 
 #include "emulator/init.h"
 #include "emulator/gs.h"
-#include "core/ppu.h"
-#include "core/cpu/ricoh.h"
 #include "emulator/rom.h"
 #include "emulator/memory.h"
+#include "general/functions.h"
 
 #ifdef for_ps2
 #include "debug.h"
@@ -16,6 +15,7 @@
 #endif
 
 char path_buf[255];
+emMemory memory;
 
 int main() {
 	rom rom_Ptr;

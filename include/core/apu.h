@@ -11,6 +11,5 @@ typedef struct sn_APU {
 	u8	ApuIO3;
 } sn_APU;
 
-extern void mapAPU(sn_APU* apu, u8** apu_buffer, bool absolute);
 
 #endif

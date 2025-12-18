@@ -1,9 +1,7 @@
 #ifndef SNLS_CPU_HEADER
 #define SNLS_CPU_HEADER
-#include "general/types.h"
-#include "emulator/rom.h"
-#include "emulator/memory.h"
 
+#include "general/types.h"
 /*ですただ */
 typedef struct sn_CPU {
 	u8*		sn_PC;
@@ -38,9 +36,5 @@ typedef struct sn_CPU {
 	bool 		sn_EFlag;
 	bool 		sn_BFlag;
 } sn_CPU;
-
-extern void setupCPU(sn_CPU* cpu, rom* rom_Ptr, emMemory* memory);
-extern void fetchCPU(sn_CPU* cpu);
-
 
 #endif
