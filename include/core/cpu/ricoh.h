@@ -4,6 +4,7 @@
 #include "general/types.h"
 /*ですただ */
 typedef struct sn_CPU {
+	u8		currentPtrBank;
 	u8*		sn_PC;
 	u8*		sn_subPC;	/* Subroutine */
 

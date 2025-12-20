@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <math.h>
 
@@ -7,10 +8,9 @@
 #include "core/dma.h"
 #include "core/apu.h"
 #include "emulator/rom.h"
+#include "emulator/general.h"
 #include "emulator/memory.h"
 #include "core/ppu.h"
-
-u8* mBank[0xFF];
 
 /*u8* memory_vMap = NULL;
 u8* memory_wRAM = NULL;
@@ -19,6 +19,7 @@ u8* memory_iCPU = NULL;
 u8* memory_rDMA = NULL;*/
 
 
+u8 holdBankAddr;
 u16 holdAddr;
 u16 holdLoAddr;
 u16 holdHiAddr;
@@ -29,11 +30,29 @@ u16 holdHiAddr;
  * stop using #include all the time for 2 functions
  * only */
 
-extern void attachROM(emMap* mMap, rom* rom_Ptr) {
-	mMap->rom_buffer = malloc(0x8000);
-	fread(mMap->rom_buffer, sizeof(u8), 0x8000, rom_File);
+extern void attachROM(u8* buffer) {
+	fread(buffer, sizeof(u8), 0x8000, rom_File);
 	return;
-}
+};
+
+extern u8 getMappedBank(u8 index, u16 address, emGeneral* emulator) {
+	if (index >= 0x00 && index <= 0x3F) {
+		if (address >= 0x8000) {
+			/* goes to rom*/
+			emulator->memory->address_target = address - 0x8000;
+			emulator->memory->bank_target = emulator->memory->bank_count;
+		} else if (address >= 0x2100 && address <= 0x213F){
+			/* falls back to ppu! */
+			emulator->memory->address_target = address - 0x2100;
+			emulator->memory->bank_target = emulator->ppu->located;
+		} else if (address >= 0x2140 && address <= 0x2143) {
+			emulator->memory->address_target = address - 0x2140;
+			emulator->memory->bank_target = emulator->apu->located;
+		}
+	} else if (index >= 0x7E && index <= 0x7F) {
+		emulator->memory->bank_target = emulator->memory->bank_count + 3;
+	}
+};
 
 extern void assignToMap(u8** dest, u8** src, unsigned int offset, unsigned int count, unsigned int type) {
 	/* don't misunderstand with a memcpy alternative 

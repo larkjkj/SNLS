@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "emulator/init.h"
+#include "emulator/general.h"
 #include "emulator/memory.h"
 #include "emulator/gs.h"
 #include "general/tools.h"
@@ -11,69 +11,77 @@
 
 #include "SDL2/SDL.h"
 
-sn_CPU* eCPU;
-sn_PPU* ePPU;
-sn_DMA* eDMA;
-sn_APU* eAPU;
-snRAM* eRAM;
+sn_CPU* eCPU = NULL;
+sn_PPU* ePPU = NULL;
+sn_DMA* eDMA = NULL;
+sn_APU* eAPU = NULL;
+snRAM* eRAM = NULL;
+
+emGeneral general;
+emMemory memory;
+emMap mMap;
+
+static void mapPtrBank(uint index, u8* bank_array[]) {
+	/* this is loROM only */
+	/* target, make 17 pointers, assuming the rom
+	 * have 16 banks, so that would be 
+	 * 32KB * 16 + 32KB => 544KB*/
+	emROM rom[index];
+	/* this is where our fun beggins */
+	for(uint i = 0; i < index; i ++) {
+		bank_array[i] = malloc(0x8000);
+		rom[i].buffer = malloc(0x8000);
+		fread(rom[i].buffer, sizeof(u8), 0x8000, rom_File);
+		bank_array[i] = rom[i].buffer;
+		free(rom[i].buffer);
+	}
+
+	general.ppu = ePPU;
+	//bank_array[index] = mMap.ppu_addr;
+	general.ppu->located = index;
+	mapPPU(ePPU, &bank_array[general.ppu->located], false);
+
+	general.apu = eAPU;
+	//bank_array[index + 1] = mMap.apu_addr;
+	general.apu->located = index + 1;
+	mapAPU(eAPU, &bank_array[general.apu->located], false);
+
+	general.dma = eDMA;
+	//bank_array[index + 2] = mMap.dma_addr;
+	general.dma->located = index + 2;
+	mapDMA(eDMA, &bank_array[general.dma->located], false);
+
+	general.memory->bank_count = index;
+	bank_array[index + 3] = eRAM->wRAM;
+
+}
 
 extern void initEmu(rom* rom_Ptr) {
-	ePPU = malloc(sizeof(sn_PPU));
-	eDMA = malloc(sizeof(sn_DMA));
-	eAPU = malloc(sizeof(sn_APU));
-	eRAM = malloc(sizeof(snRAM));
-
-	emMap mMap[rom_Ptr->banks];
-	emMemory memory;
-	emGeneral general;
-
-
-	for(unsigned int i = 0; i < 0x8000; i ++) {
+	/*TODO: move all this to memory.c, where they belong*/
+/*	for(unsigned int i = 0; i < 0x8000; i ++) {
 		eRAM->wRAM_exp1[i] = calloc(1, sizeof(u8*));
 		eRAM->wRAM_exp2[i] = calloc(1, sizeof(u8*));
 	}
-
-	for(unsigned int i = 0; i < rom_Ptr->banks; i ++) {
-		attachROM(&mMap[i], rom_Ptr);
-
-		mapPPU(ePPU, mMap[i].ppu_map, false);
-		mapAPU(eAPU, mMap[i].apu_map, false);
-		mapDMA(eDMA, mMap[i].dma_map, false);
-
-		assignToMap(mMap[i].map, mMap[i].ppu_map, 0x2100, 0x3F, 2);
-		assignToMap(mMap[i].map, mMap[i].apu_map, 0x2140, 0x04, 2);
-		assignToMap(mMap[i].map, mMap[i].dma_map, 0x4200, 0x15, 2);
-		assignToMap(mMap[i].map, &mMap[i].rom_buffer, 0x8000, 0x8000, 2);
-	
-		/* reserved for IO */
-		mMap[i].map[0x4200] = malloc(0x1);
-
-		memory.bank[i] = mMap[i].map;
-		printf("done\n");
-		/* check to confirm that our buffers are really being mapped */	
-		#ifdef DEBUG
-		if (*mMap[i].map[0x8000] != *(&mMap[i].rom_buffer[0x0]) || (mMap[i].map[0x8000] != &mMap[i].rom_buffer[0x0])) {
-			printf("error, rom not matching\n");
-			exit(1);
-		} else {
-		}
-		#endif
-		printf("%X \n", *memory.bank[i][0x8000]);
-	};
-/*	sleep(2);
-		printf("ram\n");
-		mBank[0x7F] = eRAM->wRAM_exp;
-		printf("ram2\n");
 */
+	
+	ePPU = malloc(sizeof(sn_PPU));
+	eDMA = malloc(sizeof(sn_DMA));
+	eAPU = malloc(sizeof(sn_APU));
 	eCPU = malloc(sizeof(sn_CPU));
+	eRAM = malloc(sizeof(snRAM));
+
+	general.memory = &memory;
+	eRAM->wRAM = malloc(0x8000 * 4);
+	mapPPU(ePPU, &mMap.ppu_addr, false);
+
+	mapPtrBank(rom_Ptr->banks, memory.bank_array);
+
+	fclose(rom_File);
+
 
 	general.cpu = eCPU;
-	general.apu = eAPU;
-	general.dma = eDMA;
-	general.ppu = ePPU;
-	general.memory = &memory;
-
 	setupCPU(&general, rom_Ptr);
+
 	while (1) {
 		pollWindow();
 		fetchCPU(&general);
@@ -84,10 +92,6 @@ extern void initEmu(rom* rom_Ptr) {
 	free(eCPU);
 	free(ePPU);
 	free(eDMA);
-
-	for(unsigned int i = 0; i < rom_Ptr->banks; i ++) {
-		free(mMap[i].map);
-	}
 
 	SDL_Quit();
 	return;

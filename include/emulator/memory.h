@@ -7,31 +7,32 @@
 #include "emulator/rom.h"
 
 typedef struct emMemory {
-	u8**	bank[0xFF];
+	u16	bank_target;
+	u16	address_target;
+	u8	bank_count;
+	u8*	bank_array[];
 } emMemory;
 
 typedef struct snRAM {
-	u8	wRAM_low[0x8000];
-	u8	wRAM_high[0x8000];
-	u8*	wRAM_exp1[0x8000];
-	u8*	wRAM_exp2[0x8000];
-	u8*	wRAM_exp;
+	u8*	wRAM;
+	u8*	vRAM;
+	u8*	aRAM;
 } snRAM;
 
+typedef struct emROM {
+	u8*	buffer;
+} emROM;
+
 typedef struct emMap {
-	u8*	rom_buffer;
-	u8*	ppu_map[0x3F];
-	u8*	dma_map[0x15];
-	u8*	apu_map[0x04];
-	u8*	map[0x10000];
+	u8*	ppu_addr;
+	u8*	apu_addr;
+	u8*	dma_addr;
 } emMap;
 
-extern u16* holdPtrAddr;
+
 extern u16 holdAddr;
-extern u32 reset_snV;
+extern u8 holdBankAddr;
 extern u16 holdLoAddr;
 extern u16 holdHiAddr;
-
-#define brk_eAddr (u8) rom_buffer[0x00FFFF];
 
 #endif

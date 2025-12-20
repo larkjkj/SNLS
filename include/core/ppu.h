@@ -100,8 +100,8 @@ typedef struct p_Tile {
 } p_Tile;
 
 typedef struct sn_PPU {
-	u8	p_Buf[0x2A];
-	u8	p_vRAM[65536];
+	u8	located;
+
 	u8	IniDisp;
 	u8	ObjSel;
 	u8	OamADDL;

@@ -136,7 +136,7 @@ extern void snWAI(emGeneral* emulator);
 extern void snXCE(emGeneral* emulator);
 */
 
-#include "emulator/init.h"
+#include "emulator/general.h"
 
 extern void sn_OpBMI(emGeneral* emulator);
 extern void sn_OpBPL(emGeneral* emulator);

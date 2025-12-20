@@ -3,10 +3,6 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "emulator/init.h"
-#include "emulator/gs.h"
-#include "emulator/rom.h"
-#include "emulator/memory.h"
 #include "general/functions.h"
 
 #ifdef for_ps2
@@ -15,12 +11,10 @@
 #endif
 
 char path_buf[255];
-emMemory memory;
 
 int main() {
 	rom rom_Ptr;
-
-	initWindow();
+	//initWindow();
 	/* Just a check to make sure we're on the correct path */
 	getcwd(path_buf, sizeof(path_buf));
 

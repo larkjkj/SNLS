@@ -6,13 +6,13 @@
 #include "emulator/memory.h"
 #include "core/dma.h"
 
-extern void mapDMA(sn_DMA* dma, u8** dma_buffer, bool absolute) {
+extern void mapDMA(sn_DMA* dma, u8* buffer, bool absolute) {
 	if (absolute) {
-		dma_buffer[MDMAEN] = &dma->MdMaen;
-		dma_buffer[HDMAEN] = &dma->HdMaen;
+		buffer[MDMAEN] = dma->MdMaen;
+		buffer[HDMAEN] = dma->HdMaen;
 	} else {
-		dma_buffer[0x0B] = &dma->MdMaen;
-		dma_buffer[0x0C] = &dma->HdMaen;
+		buffer[0x0B] = dma->MdMaen;
+		buffer[0x0C] = dma->HdMaen;
 	}
 	return;
 };

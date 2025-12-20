@@ -5,28 +5,36 @@
 #include "core/cpu/opcodes.h"
 #include "core/cpu/interpreter.h"
 #include "core/cpu/ricoh.h"
-#include "emulator/init.h"
+#include "emulator/general.h"
 #include "emulator/memory.h"
 #include "emulator/rom.h"
 #include "core/bus.h"
 
 //#include "interpreter.h"
 extern void setupCPU(emGeneral *emulator, rom* rom_Ptr) {
+	printf("cpu_setup: init\n");
 	/* Emulation Mode */
 	emulator->cpu->sn_EFlag = 1;
 	emulator->cpu->sn_MFlag = 1;
 	emulator->cpu->sn_XFlag = 1;
+
+	/* this sets registers to zero
+	 * this is only made for debugging
+	 * the real SNES can point these
+	 * values to every thing */
 	emulator->cpu->sn_P = 0;
 	emulator->cpu->sn_PB = 0;
+	emulator->cpu->sn_DBR = 0;
 
 	printf("cpu_setup: done\n");
-	emulator->cpu->sn_PC = emulator->memory->bank[emulator->cpu->sn_PB][rom_Ptr->resetV];
-	printf("cpu_setup: starting at %X %X \n", *emulator->memory->bank[0x0][0x8000], emulator->cpu->sn_PC);
+	emulator->cpu->sn_PC = &emulator->memory->bank_array[emulator->cpu->sn_DBR][0x0];
+	printf("cpu_setup: starting at %X %X \n", emulator->memory->bank_array[emulator->cpu->sn_DBR][0], emulator->cpu->sn_PC);
 }
 
 extern void fetchCPU(emGeneral* emulator) {
 	printf("cpu_fetch: reading opcode %X \n", *emulator->cpu->sn_PC);
-	printf("cpu_fetch: %X %X %X \n", emulator->cpu->sn_Acc, emulator->cpu->sn_X, emulator->cpu->sn_Y);
+	printf("ram_watch: %X \n", emulator->memory->bank_array[13][0x0]);
+	printf("cpu_fetch: %X %X %X %X %X \n", emulator->cpu->sn_Acc, emulator->cpu->sn_X, emulator->cpu->sn_Y, emulator->cpu->sn_EFlag, emulator->cpu->sn_MFlag);
 	switch (*(emulator->cpu->sn_PC)) {
 		case _bmi:
 			sn_OpBMI(emulator);
@@ -153,13 +161,13 @@ extern void fetchCPU(emGeneral* emulator) {
 			break;
 		case 0x00:
 			printf("cpu_fetch: cpu crossed at zero, something wrong? \n");
+			emulator->cpu->sn_PC++;
 			sleep(2);
 			break;
 		default:
 			printf("cpu_fetch: unknown opcode %X \n",*(emulator->cpu->sn_PC));
+			emulator->cpu->sn_PC++;
 			break;
 	};
 
-	//usleep(1000000);*/
-	++emulator->cpu->sn_PC;
 }

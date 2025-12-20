@@ -5,6 +5,7 @@
 #include "general/types.h"
 
 typedef struct sn_APU {
+	u8	located;
 	u8	ApuIO0;
 	u8	ApuIO1;
 	u8	ApuIO2;

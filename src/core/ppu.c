@@ -22,7 +22,7 @@ extern void allocPPU(sn_PPU* ppu) {
 */
 };
 
-extern void mapPPU(sn_PPU* ppu, u8** ppu_buffer, bool absolute) {
+extern void mapPPU(sn_PPU* ppu, u8** buffer, bool absolute) {
 	/* don't use absolute if you don't know what you're doing. */
 	/* it was here 'cause of a direct mapping method using Map
 	 * instead of PPU_map, it's here for future reasons... 
@@ -30,23 +30,23 @@ extern void mapPPU(sn_PPU* ppu, u8** ppu_buffer, bool absolute) {
 	 * malloc */
 
 	if (absolute) {
-		ppu_buffer[INIDISP] = &ppu->IniDisp;
-		ppu_buffer[OBJSEL] = &ppu->ObjSel;
-		ppu_buffer[OAMADDL] = &ppu->OamADDL;
-		ppu_buffer[OAMADDH] = &ppu->OamADDH;
-		ppu_buffer[BGMODE] = &ppu->BgMode;
+		buffer[INIDISP] = &ppu->IniDisp;
+		buffer[OBJSEL] = &ppu->ObjSel;
+		buffer[OAMADDL] = &ppu->OamADDL;
+		buffer[OAMADDH] = &ppu->OamADDH;
+		buffer[BGMODE] = &ppu->BgMode;
 	} else {
-		ppu_buffer[0x00] = &ppu->IniDisp;
-		ppu_buffer[0x01] = &ppu->ObjSel;
-		ppu_buffer[0x02] = &ppu->OamADDL;
-		ppu_buffer[0x03] = &ppu->OamADDH;
-		ppu_buffer[0x04] = &ppu->OamData;
-		ppu_buffer[0x05] = &ppu->BgMode;
-		ppu_buffer[0x06] = &ppu->Mosaic;
-		ppu_buffer[0x07] = &ppu->Bg1SC;
-		ppu_buffer[0x08] = &ppu->Bg2SC;
-		ppu_buffer[0x09] = &ppu->Bg3SC;
-		ppu_buffer[0x0A] = &ppu->Bg4SC;
+		buffer[0x00] = &ppu->IniDisp;
+		buffer[0x01] = &ppu->ObjSel;
+		buffer[0x02] = &ppu->OamADDL;
+		buffer[0x03] = &ppu->OamADDH;
+		buffer[0x04] = &ppu->OamData;
+		buffer[0x05] = &ppu->BgMode;
+		buffer[0x06] = &ppu->Mosaic;
+		buffer[0x07] = &ppu->Bg1SC;
+		buffer[0x08] = &ppu->Bg2SC;
+		buffer[0x09] = &ppu->Bg3SC;
+		buffer[0x0A] = &ppu->Bg4SC;
 	}
 	return;
 }
