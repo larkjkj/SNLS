@@ -5,7 +5,7 @@
 #include "general/types.h"
 
 typedef struct rom {
-	char*	headername;
+	char	headername[21];
 	size_t	size;
 	size_t	offset;
 	u8	type;

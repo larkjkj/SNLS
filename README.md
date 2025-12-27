@@ -4,17 +4,17 @@
 
 ![AWESOME LOGO](assets/logo/logo.png)
 
-A SNES emulator focused on __perfomance__, __portability__ and [__features__](#features).
+A SNES emulator focused on __perfomance__, __lightness__, __portability__ and [__features__](#features).
 
 # What we've got so far?
 ### Basics
 - [x] CPU
 - [ ] PPU
 - [ ] APU
-- [ ] DMA
+- [x] DMA
 - [x] Banks
 - [x] Memory Mapping
-- [x] Functional BUS
+- [x] BUS
 - [ ] Special Chips(SA-1, SuperFX, etc...)
 
 ### Features 

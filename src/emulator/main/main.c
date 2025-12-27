@@ -12,7 +12,16 @@
 
 char path_buf[255];
 
-int main() {
+int main(int argc, char* argv[]) {
+	for(unsigned int i = 0; i < argc; i ++) {
+		if (strcmp(argv[i], "--ipl") == 0) {
+			if (argv[i] == NULL) {
+				printf("WARNING: empty IPL argument \n");
+			}
+			printf("WARNING: --ipl is not implemented yet.\nparameter [%s] will be ignored\n", argv[++i]);
+			sleep(1);
+		}
+	}
 	rom rom_Ptr;
 	//initWindow();
 	/* Just a check to make sure we're on the correct path */

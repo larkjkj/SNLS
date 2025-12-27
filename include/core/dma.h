@@ -4,10 +4,13 @@
 #define MDMAEN 0x420B
 #define HDMAEN 0x420C
 
-typedef struct sn_DMA {
+#include "general/references.h"
+
+typedef struct snDMA {
 	u8	located;
 	u8	MdMaen;
 	u8	HdMaen;
-} sn_DMA;
+	void	(*fetch)(emGeneral* emulator);
+} snDMA;
 
 #endif

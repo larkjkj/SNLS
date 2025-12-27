@@ -1,9 +1,9 @@
 binary		:= SNLS.ELF
 ps2		:= 0 
 debug		:= 0
-flags		:= -g -DDEBUG=0
-includes	:= -Iinclude -I.
-libraries	:= -lSDL2 -lfreetype 
+flags		:= -g -DDEBUG=0 
+includes	:= -Iinclude -I. -Iinclude/general
+libraries	:= -lSDL2 -L.
 
 ifeq ($(ps2), 1)
 	source		+= src/platform/ps2
@@ -21,7 +21,7 @@ ifeq ($(ps2), 1)
 
 	linkfile	:= -T$(PS2SDK)/ee/startup/linkfile
 else
-	libraries	+= -lc -lGL -lpng
+	libraries	+= -lc -lGL -lpng -lglfw 
 	includes    	+= -I/usr/include/freetype2 \
 			   -I/usr/include/ -I/usr/include/GL \
 			   -I/usr/include/libpng16
@@ -48,11 +48,13 @@ source		+= src \
 c_source 	+= $(foreach c_src, $(source), $(wildcard $(c_src)/*.c))
 #c_source	+= $(foreach c_src, $(source), $(wildcard $(c_src)/*.cpp))
 c_objects	+= $(patsubst %.c,build/%.o,$(c_source))
+d_files		+= $(patsubst %.c,build/%.d,$(c_source))
 #c_objects	+= $(patsubst %.cpp,build/%.o,$(c_source))
 #c_objects	+= $(patsubst %.cpp,build/%.o,$(cpp_source))
 
 # not used
 # objects		:= $(c_objects)
+
 
 all: $(binary)
 
@@ -60,10 +62,11 @@ $(binary): $(c_objects)
 	@echo -e '\n\t Linking to $@...\n'
 	$(compiler) $(linkfile) -o $@ $^ $(includes) $(libraries)
 
-build/%.o: %.c
+build/%.o: %.c 
 	@mkdir -p $(@D)
 	@echo -e '\n\t Building $@\n'
 	$(compiler) -c $^ -o $@ $(includes) $(flags) $(libraries)
+
 
 #build/%.o: %.cpp
 #	@mkdir -p $(@D)
@@ -72,3 +75,4 @@ build/%.o: %.c
 
 clean:
 	rm -rf build
+

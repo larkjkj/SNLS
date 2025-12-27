@@ -8,7 +8,7 @@
 #include "core/dma.h"
 #include "core/apu.h"
 #include "emulator/rom.h"
-#include "emulator/general.h"
+#include "emulator/main.h"
 #include "emulator/memory.h"
 #include "core/ppu.h"
 
@@ -40,17 +40,27 @@ extern u8 getMappedBank(u8 index, u16 address, emGeneral* emulator) {
 		if (address >= 0x8000) {
 			/* goes to rom*/
 			emulator->memory->address_target = address - 0x8000;
-			emulator->memory->bank_target = emulator->memory->bank_count;
+			emulator->memory->bank_target = index;
 		} else if (address >= 0x2100 && address <= 0x213F){
 			/* falls back to ppu! */
 			emulator->memory->address_target = address - 0x2100;
 			emulator->memory->bank_target = emulator->ppu->located;
 		} else if (address >= 0x2140 && address <= 0x2143) {
+			/* falls back to apu! */
 			emulator->memory->address_target = address - 0x2140;
 			emulator->memory->bank_target = emulator->apu->located;
+		} else if (address == 0x420B || address == 0x420C) {
+			emulator->memory->address_target = address - 0x420B;	
+			emulator->memory->bank_target = emulator->dma->located;
 		}
-	} else if (index >= 0x7E && index <= 0x7F) {
+		printf("%X \n", emulator->memory->address_target);
+			sleep(1);
+	} else if (index >= 0x7E) {
+		emulator->memory->address_target = address;
 		emulator->memory->bank_target = emulator->memory->bank_count + 3;
+	} else if (index <= 0x7F) {
+		emulator->memory->address_target = address;
+		emulator->memory->bank_target = emulator->memory->bank_count + 4;
 	}
 };
 
@@ -68,7 +78,7 @@ extern void assignToMap(u8** dest, u8** src, unsigned int offset, unsigned int c
 	};
 }
 
-extern void setupSystem(u8* buffer, sn_PPU* ppu, sn_DMA* dma) {
+extern void setupSystem(u8* buffer, snPPU* ppu, snDMA* dma) {
 	/*for(unsigned int i = 0; i < 0xFF; i ++) {
 		mBank[i] = malloc(sizeof(u8));
 	};

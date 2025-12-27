@@ -2,6 +2,7 @@
 #define SNLS_PPU_HEADER 
 
 #include "general/types.h"
+#include "general/references.h"
 #include "emulator/memory.h"
 
 #define INIDISP		0x2100
@@ -99,7 +100,7 @@ typedef struct p_Tile {
 	u8	right;
 } p_Tile;
 
-typedef struct sn_PPU {
+typedef struct snPPU {
 	u8	located;
 
 	u8	IniDisp;
@@ -128,6 +129,11 @@ typedef struct sn_PPU {
 	u8	vMADDH;
 	u8	vMDATAL;
 	u8	vMDATAH;
-} sn_PPU;
+
+	u8	cgAdd;
+	u8	cgData;
+
+	void		(*fetch)(emGeneral* emulator);
+} snPPU;
 
 #endif

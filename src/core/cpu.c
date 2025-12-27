@@ -3,41 +3,24 @@
 #include <unistd.h>
 
 #include "core/cpu/opcodes.h"
-#include "core/cpu/interpreter.h"
 #include "core/cpu/ricoh.h"
-#include "emulator/general.h"
+#include "emulator/main.h"
 #include "emulator/memory.h"
 #include "emulator/rom.h"
 #include "core/bus.h"
 
 //#include "interpreter.h"
-extern void setupCPU(emGeneral *emulator, rom* rom_Ptr) {
-	printf("cpu_setup: init\n");
-	/* Emulation Mode */
-	emulator->cpu->sn_EFlag = 1;
-	emulator->cpu->sn_MFlag = 1;
-	emulator->cpu->sn_XFlag = 1;
-
-	/* this sets registers to zero
-	 * this is only made for debugging
-	 * the real SNES can point these
-	 * values to every thing */
-	emulator->cpu->sn_P = 0;
-	emulator->cpu->sn_PB = 0;
-	emulator->cpu->sn_DBR = 0;
-
-	printf("cpu_setup: done\n");
-	emulator->cpu->sn_PC = &emulator->memory->bank_array[emulator->cpu->sn_DBR][0x0];
-	printf("cpu_setup: starting at %X %X \n", emulator->memory->bank_array[emulator->cpu->sn_DBR][0], emulator->cpu->sn_PC);
-}
-
-extern void fetchCPU(emGeneral* emulator) {
-	printf("cpu_fetch: reading opcode %X \n", *emulator->cpu->sn_PC);
-	printf("ram_watch: %X \n", emulator->memory->bank_array[13][0x0]);
-	printf("cpu_fetch: %X %X %X %X %X \n", emulator->cpu->sn_Acc, emulator->cpu->sn_X, emulator->cpu->sn_Y, emulator->cpu->sn_EFlag, emulator->cpu->sn_MFlag);
+static void fetchCPU(emGeneral* emulator) {
+	*emulator->active |= 0x01;
+	printf("cpu_fetch: a: %X x: %X y: %X eF: %X mF: %X \n", emulator->cpu->sn_Acc, emulator->cpu->sn_X, emulator->cpu->sn_Y, emulator->cpu->sn_EFlag, emulator->cpu->sn_MFlag);
+	printf("cpu_opcode: %X \n", *emulator->cpu->sn_PC);
+	printf("cpu_steps: %d\n", emulator->cpu->steps);
 	switch (*(emulator->cpu->sn_PC)) {
 		case _bmi:
 			sn_OpBMI(emulator);
+			break;
+		case _bne:
+			sn_OpBNE(emulator);
 			break;
 		case _bpl:
 			sn_OpBPL(emulator);
@@ -56,6 +39,9 @@ extern void fetchCPU(emGeneral* emulator) {
 			break;
 		case _clv:
 			sn_OpCLV(emulator);
+			break;
+		case _cmp_addr:
+			sn_OpCMP_addr(emulator);
 			break;
 		case _dea:
 			sn_OpDEA(emulator);
@@ -86,6 +72,9 @@ extern void fetchCPU(emGeneral* emulator) {
 			break;
 		case _jsr_addr:
 			sn_OpJSR_addr(emulator);
+			break;
+		case _lda_addr:
+			sn_OpLDA_addr(emulator);
 			break;
 		case _lda_const:
 			sn_OpLDA_const(emulator);
@@ -160,14 +149,38 @@ extern void fetchCPU(emGeneral* emulator) {
 			sn_OpXCE(emulator);
 			break;
 		case 0x00:
-			printf("cpu_fetch: cpu crossed at zero, something wrong? \n");
+			printf("cpu_fetch: cpu crossed at zero, something wrong? \nlast byte: %02X current byte: %02X next byte: %02X at address: %X\n", *(emulator->cpu->sn_PC - 1), *emulator->cpu->sn_PC, *(emulator->cpu->sn_PC + 1), emulator->memory->address_target);
 			emulator->cpu->sn_PC++;
-			sleep(2);
+			//sleep(2);
 			break;
 		default:
 			printf("cpu_fetch: unknown opcode %X \n",*(emulator->cpu->sn_PC));
-			emulator->cpu->sn_PC++;
+			++emulator->cpu->sn_PC;
 			break;
 	};
-
+	*emulator->active ^= 0x01;
+	emulator->endfetch(emulator);
 }
+
+extern void setupCPU(emGeneral *emulator, rom* rom_Ptr) {
+	printf("cpu_setup: init\n");
+	/* Emulation Mode */
+	emulator->cpu->sn_EFlag = 1;
+	emulator->cpu->sn_MFlag = 1;
+	emulator->cpu->sn_XFlag = 1;
+
+	/* this sets registers to zero
+	 * this is only made for debugging
+	 * the real SNES can point these
+	 * values to every thing */
+	emulator->cpu->sn_P = 0;
+	emulator->cpu->sn_PB = 0;
+	emulator->cpu->sn_DBR = 0;
+	emulator->cpu->fetch = fetchCPU;
+
+	printf("cpu_setup: done\n");
+	emulator->cpu->sn_PC = &emulator->memory->bank_array[emulator->cpu->sn_DBR][rom_Ptr->resetV - 0x8000];
+	printf("cpu_setup: starting at %X %X \n", emulator->memory->bank_array[emulator->cpu->sn_DBR][0], emulator->cpu->sn_PC);
+}
+
+

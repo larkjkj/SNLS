@@ -14,20 +14,17 @@ typedef struct emMemory {
 } emMemory;
 
 typedef struct snRAM {
-	u8*	wRAM;
+	u8*	wRAM_lo;
+	u8*	wRAM_hi;
+	u8*	wRAM_ext1;
+	u8*	wRAM_ext2;
+
 	u8*	vRAM;
-	u8*	aRAM;
 } snRAM;
 
 typedef struct emROM {
 	u8*	buffer;
 } emROM;
-
-typedef struct emMap {
-	u8*	ppu_addr;
-	u8*	apu_addr;
-	u8*	dma_addr;
-} emMap;
 
 
 extern u16 holdAddr;

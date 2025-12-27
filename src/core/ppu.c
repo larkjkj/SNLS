@@ -4,56 +4,48 @@
 #include <string.h>
 
 #include "emulator/memory.h"
-#include "emulator/rom.h"
-#include "core/cpu/ricoh.h"
-#include "core/ppu.h"
+#include "emulator/main.h"
 
-extern void allocPPU(sn_PPU* ppu) {
-/*	ppu->IniDisp = malloc(sizeof(u8));
-	ppu->ObjSel = malloc(sizeof(u8));
-	ppu->OamADDL = malloc(sizeof(u8));
-	ppu->OamADDH = malloc(sizeof(u8));
-	ppu->BgMode = malloc(sizeof(u8));
-	ppu->Mosaic = malloc(sizeof(u8));
-	ppu->Bg1SC = malloc(sizeof(u8));
-	ppu->Bg2SC = malloc(sizeof(u8));
-	ppu->Bg3SC = malloc(sizeof(u8));
-	ppu->Bg4SC = malloc(sizeof(u8));
-*/
-};
+static void fetchPPU(emGeneral* emulator) {
+	*emulator->active |= 0x02;
+	/* this doesn't "fetch" the ppu, it just prints a value
+	 * of a register to check if setupping is working */
+	printf("ppu_fetch: ppu-> %X %X %X %X\n", emulator->ppu->IniDisp, emulator->ppu->BgMode, emulator->ppu->cgAdd, emulator->ppu->cgData);
+	*emulator->active ^= 0x02;
+	emulator->endfetch(emulator);
+	return;
+}
 
-extern void mapPPU(sn_PPU* ppu, u8** buffer, bool absolute) {
+extern void setupPPU(emGeneral* emulator, u8** buffer, bool absolute) {
 	/* don't use absolute if you don't know what you're doing. */
-	/* it was here 'cause of a direct mapping method using Map
-	 * instead of PPU_map, it's here for future reasons... 
+	/* it was here 'cause of a direct setupping method using Map
+	 * instead of PPU_setup, it's here for future reasons... 
 	 * also if you use, keep in mind that you will need a bigger
 	 * malloc */
+	emulator->ppu->fetch = fetchPPU;
 
 	if (absolute) {
-		buffer[INIDISP] = &ppu->IniDisp;
-		buffer[OBJSEL] = &ppu->ObjSel;
-		buffer[OAMADDL] = &ppu->OamADDL;
-		buffer[OAMADDH] = &ppu->OamADDH;
-		buffer[BGMODE] = &ppu->BgMode;
+		buffer[INIDISP] = &emulator->ppu->IniDisp;
+		buffer[OBJSEL] = &emulator->ppu->ObjSel;
+		buffer[OAMADDL] = &emulator->ppu->OamADDL;
+		buffer[OAMADDH] = &emulator->ppu->OamADDH;
+		buffer[BGMODE] = &emulator->ppu->BgMode;
 	} else {
-		buffer[0x00] = &ppu->IniDisp;
-		buffer[0x01] = &ppu->ObjSel;
-		buffer[0x02] = &ppu->OamADDL;
-		buffer[0x03] = &ppu->OamADDH;
-		buffer[0x04] = &ppu->OamData;
-		buffer[0x05] = &ppu->BgMode;
-		buffer[0x06] = &ppu->Mosaic;
-		buffer[0x07] = &ppu->Bg1SC;
-		buffer[0x08] = &ppu->Bg2SC;
-		buffer[0x09] = &ppu->Bg3SC;
-		buffer[0x0A] = &ppu->Bg4SC;
+		buffer[0x00] = &emulator->ppu->IniDisp;
+		buffer[0x01] = &emulator->ppu->ObjSel;
+		buffer[0x02] = &emulator->ppu->OamADDL;
+		buffer[0x03] = &emulator->ppu->OamADDH;
+		buffer[0x04] = &emulator->ppu->OamData;
+		buffer[0x05] = &emulator->ppu->BgMode;
+		buffer[0x06] = &emulator->ppu->Mosaic;
+		buffer[0x07] = &emulator->ppu->Bg1SC;
+		buffer[0x08] = &emulator->ppu->Bg2SC;
+		buffer[0x09] = &emulator->ppu->Bg3SC;
+		buffer[0x0A] = &emulator->ppu->Bg4SC;
+
+		buffer[0x21] = &emulator->ppu->cgAdd;
+		buffer[0x22] = &emulator->ppu->cgData;
 	}
 	return;
 }
 
-extern void fetchPPU(sn_PPU* ppu) {
-	/* this doesn't "fetch" the ppu, it just prints a value
-	 * of a register to check if mapping is working */
-	printf("ppu_fetch: ppu-> %X \n", ppu->IniDisp);
-	return;
-}

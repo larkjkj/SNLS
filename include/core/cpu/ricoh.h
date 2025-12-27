@@ -2,8 +2,10 @@
 #define SNLS_CPU_HEADER
 
 #include "general/types.h"
+#include "general/references.h"
+
 /*ですただ */
-typedef struct sn_CPU {
+typedef struct snCPU {
 	u8		currentPtrBank;
 	u8*		sn_PC;
 	u8*		sn_subPC;	/* Subroutine */
@@ -18,7 +20,8 @@ typedef struct sn_CPU {
 	u16		sn_P;
 
 	u8		sn_Flags;
-
+	void		(*fetch)(emGeneral* emulator);
+	
 	/* in the future, i want
 	 * to implement an idea
 	 * that i had in the project
@@ -36,6 +39,9 @@ typedef struct sn_CPU {
 	bool 		sn_CFlag;
 	bool 		sn_EFlag;
 	bool 		sn_BFlag;
-} sn_CPU;
+
+	u8		steps;
+
+} snCPU;
 
 #endif
